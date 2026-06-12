@@ -86,5 +86,44 @@
 .pw-to-top.is-visible{opacity:1;transform:translateY(0)}
 .pw-to-top:hover{filter:brightness(1.08)}
 
+/* ============ Per-page-type layout variants ============ */
+
+/* HOME — feed: single-column text list, no thumbs */
+.pw-home-feed .post-grid{grid-template-columns:1fr!important;gap:0}
+.pw-home-feed .card{border:0;border-bottom:1px solid #eceef1;border-radius:0}
+.pw-home-feed .card--classic:hover{box-shadow:none;transform:none}
+.pw-home-feed .card__media{display:none}
+.pw-home-feed .card__body{padding:16px 0}
+.pw-home-feed .card__title{font-size:1.25rem}
+/* HOME — magazine: first card spans full width as a lead */
+@media(min-width:768px){
+  .pw-home-magazine .post-grid > .card:first-child{grid-column:1/-1}
+  .pw-home-magazine .post-grid > .card:first-child .card__title{font-size:1.6rem}
+}
+
+/* ARCHIVE — list: horizontal rows (thumb left, text right) */
+.pw-archive-list .post-grid{grid-template-columns:1fr;gap:0}
+.pw-archive-list .card{border:0;border-bottom:1px solid #eceef1;border-radius:0}
+.pw-archive-list .card--classic:hover{box-shadow:none;transform:none}
+.pw-archive-list .card__body{padding:14px 0}
+@media(min-width:560px){
+  .pw-archive-list .card__link{display:grid;grid-template-columns:180px 1fr;gap:16px;align-items:center}
+  .pw-archive-list .card__media{aspect-ratio:2/1;border-radius:8px}
+}
+/* ARCHIVE — headlines: title-only rows */
+.pw-archive-headlines .post-grid{grid-template-columns:1fr;gap:0}
+.pw-archive-headlines .card{border:0;border-bottom:1px solid #eceef1;border-radius:0}
+.pw-archive-headlines .card--classic:hover{box-shadow:none;transform:none}
+.pw-archive-headlines .card__media,.pw-archive-headlines .card__excerpt{display:none}
+.pw-archive-headlines .card__body{padding:13px 0}
+.pw-archive-headlines .card__title{font-size:1.1rem;margin:0}
+
+/* SINGLE — centered: constrained measure */
+.pw-single-centered .single-article,.pw-single-centered .page{max-width:760px;margin-inline:auto}
+/* SINGLE — landing: strip chrome for max content focus */
+.pw-single-landing .primary-nav,.pw-single-landing .single-featured,
+.pw-single-landing .single-footer,.pw-single-landing .single-meta .reading-time{display:none}
+.pw-single-landing .single-article{max-width:720px;margin-inline:auto}
+
 /* Respect reduced motion */
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

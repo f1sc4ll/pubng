@@ -47,10 +47,15 @@ function pubweb_entry_meta(): void {
  * Whether the sidebar layout is active for the current view.
  */
 function pubweb_has_sidebar(): bool {
-	if ( is_page_template( 'full-width' ) || is_front_page() ) {
-		return false;
+	if ( is_front_page() || is_home() ) {
+		return false; // Home never has a sidebar.
 	}
-	return (bool) pubweb_settings( 'layout.show_sidebar' ) && is_active_sidebar( 'sidebar-1' );
+	if ( is_singular( 'post' ) ) {
+		$has = 'sidebar' === pubweb_settings( 'layout.single_variant' );
+	} else {
+		$has = (bool) pubweb_settings( 'layout.show_sidebar' );
+	}
+	return $has && is_active_sidebar( 'sidebar-1' );
 }
 
 /**
@@ -63,7 +68,14 @@ add_filter(
 	'body_class',
 	static function ( array $classes ): array {
 		$classes[] = pubweb_has_sidebar() ? 'has-sidebar' : 'no-sidebar';
-		$classes[] = 'layout-' . sanitize_html_class( (string) pubweb_settings( 'layout.homepage_style', 'grid' ) );
+		// Per-page-type layout variant (CSS switches off these classes).
+		if ( is_front_page() || is_home() ) {
+			$classes[] = 'pw-home-' . sanitize_html_class( (string) pubweb_settings( 'layout.home_variant', 'grid' ) );
+		} elseif ( is_singular( 'post' ) ) {
+			$classes[] = 'pw-single-' . sanitize_html_class( (string) pubweb_settings( 'layout.single_variant', 'centered' ) );
+		} elseif ( is_archive() || is_search() ) {
+			$classes[] = 'pw-archive-' . sanitize_html_class( (string) pubweb_settings( 'layout.archive_variant', 'grid' ) );
+		}
 		if ( pubweb_settings( 'layout.sticky_header' ) ) {
 			$classes[] = 'sticky-header';
 			if ( pubweb_settings( 'layout.sticky_shrink' ) ) {
@@ -134,4 +146,40 @@ function pubweb_section_heading( string $text ): void {
 /** Card CSS class reflecting the configured card style. */
 function pubweb_card_class(): string {
 	return 'overlay' === pubweb_settings( 'layout.card_style' ) ? 'card card--overlay' : 'card card--classic';
+}
+
+/**
+ * Expand safe {{tokens}} in operator custom code (head/footer). NO PHP is
+ * executed — only a fixed allowlist of context values, each escaped, so
+ * there is zero code-execution surface.
+ *
+ * Tokens: {{site_name}} {{site_url}} {{year}} {{lang}} {{url}}
+ *         {{post_id}} {{post_title}} {{category}}
+ *
+ * @param string $html Raw custom code.
+ * @return string
+ */
+function pubweb_expand_tokens( string $html ): string {
+	if ( '' === $html || ! str_contains( $html, '{{' ) ) {
+		return $html;
+	}
+	$cat = '';
+	if ( is_singular( 'post' ) ) {
+		$cats = get_the_category();
+		$cat  = ! empty( $cats ) ? $cats[0]->name : '';
+	} elseif ( is_category() ) {
+		$obj = get_queried_object();
+		$cat = $obj instanceof WP_Term ? $obj->name : '';
+	}
+	$map = array(
+		'{{site_name}}'  => esc_html( get_bloginfo( 'name' ) ),
+		'{{site_url}}'   => esc_url( home_url( '/' ) ),
+		'{{year}}'       => esc_html( gmdate( 'Y' ) ),
+		'{{lang}}'       => esc_html( get_locale() ),
+		'{{url}}'        => esc_url( home_url( add_query_arg( array() ) ) ),
+		'{{post_id}}'    => is_singular() ? (string) get_the_ID() : '',
+		'{{post_title}}' => is_singular() ? esc_html( get_the_title() ) : '',
+		'{{category}}'   => esc_html( $cat ),
+	);
+	return strtr( $html, $map );
 }

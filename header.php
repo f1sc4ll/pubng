@@ -17,7 +17,7 @@ defined( 'ABSPATH' ) || exit;
 	// Operator-supplied head code (ad/analytics tags) — admin-trust, raw.
 	$pubweb_head = (string) pubweb_settings( 'custom_code.head_html' );
 	if ( '' !== $pubweb_head ) {
-		echo $pubweb_head . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput
+		echo pubweb_expand_tokens( $pubweb_head ) . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput
 	}
 	$pubweb_css = (string) pubweb_settings( 'custom_code.custom_css' );
 	if ( '' !== $pubweb_css ) {

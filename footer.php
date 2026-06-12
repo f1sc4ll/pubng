@@ -45,7 +45,7 @@ defined( 'ABSPATH' ) || exit;
 // Operator-supplied footer code (ad/conversion tags) — admin-trust, raw.
 $pubweb_footer = (string) pubweb_settings( 'custom_code.footer_html' );
 if ( '' !== $pubweb_footer ) {
-	echo $pubweb_footer . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput
+	echo pubweb_expand_tokens( $pubweb_footer ) . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput
 }
 wp_footer();
 ?>

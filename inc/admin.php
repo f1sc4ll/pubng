@@ -92,6 +92,9 @@ function pubweb_handle_admin_save(): void {
 			'body_bg'   => sanitize_hex_color( $s( 'colors', 'body_bg' ) ) ?: '#ffffff',
 		),
 		'layout'      => array(
+			'home_variant'       => in_array( $in['layout']['home_variant'] ?? 'grid', array( 'grid', 'feed', 'magazine' ), true ) ? $in['layout']['home_variant'] : 'grid',
+			'single_variant'     => in_array( $in['layout']['single_variant'] ?? 'centered', array( 'centered', 'sidebar', 'landing' ), true ) ? $in['layout']['single_variant'] : 'centered',
+			'archive_variant'    => in_array( $in['layout']['archive_variant'] ?? 'grid', array( 'grid', 'list', 'headlines' ), true ) ? $in['layout']['archive_variant'] : 'grid',
 			'homepage_style'     => 'list' === ( $in['layout']['homepage_style'] ?? 'grid' ) ? 'list' : 'grid',
 			'card_style'         => 'overlay' === ( $in['layout']['card_style'] ?? 'classic' ) ? 'overlay' : 'classic',
 			'posts_columns'      => in_array( (int) ( $in['layout']['posts_columns'] ?? 3 ), array( 2, 3 ), true ) ? (int) $in['layout']['posts_columns'] : 3,
@@ -201,6 +204,26 @@ function pubweb_render_admin_page(): void {
 
 				<div class="pw-tab" data-tab="layout" hidden>
 					<table class="form-table" role="presentation">
+						<tr><th colspan="2" style="padding-bottom:0"><strong><?php esc_html_e( 'Layout per page type', 'pubweb' ); ?></strong> <span class="description"><?php esc_html_e( '(each template has its own model — see the reference winners)', 'pubweb' ); ?></span></th></tr>
+						<tr><th><?php esc_html_e( 'Home', 'pubweb' ); ?></th><td>
+							<select name="pw[layout][home_variant]" class="pw-live" data-prop="homeVar">
+								<option value="grid"<?php selected( $g( 'layout.home_variant' ), 'grid' ); ?>><?php esc_html_e( 'Grid (hero + card grid)', 'pubweb' ); ?></option>
+								<option value="feed"<?php selected( $g( 'layout.home_variant' ), 'feed' ); ?>><?php esc_html_e( 'Feed (fast text list, no thumbs)', 'pubweb' ); ?></option>
+								<option value="magazine"<?php selected( $g( 'layout.home_variant' ), 'magazine' ); ?>><?php esc_html_e( 'Magazine (full-width lead + grid)', 'pubweb' ); ?></option>
+							</select></td></tr>
+						<tr><th><?php esc_html_e( 'Post', 'pubweb' ); ?></th><td>
+							<select name="pw[layout][single_variant]" class="pw-live" data-prop="singleVar">
+								<option value="centered"<?php selected( $g( 'layout.single_variant' ), 'centered' ); ?>><?php esc_html_e( 'Centered (720px, no sidebar)', 'pubweb' ); ?></option>
+								<option value="sidebar"<?php selected( $g( 'layout.single_variant' ), 'sidebar' ); ?>><?php esc_html_e( 'With right sidebar', 'pubweb' ); ?></option>
+								<option value="landing"<?php selected( $g( 'layout.single_variant' ), 'landing' ); ?>><?php esc_html_e( 'Landing (minimal chrome)', 'pubweb' ); ?></option>
+							</select></td></tr>
+						<tr><th><?php esc_html_e( 'Category / archive', 'pubweb' ); ?></th><td>
+							<select name="pw[layout][archive_variant]" class="pw-live" data-prop="archiveVar">
+								<option value="grid"<?php selected( $g( 'layout.archive_variant' ), 'grid' ); ?>><?php esc_html_e( 'Grid (same as home)', 'pubweb' ); ?></option>
+								<option value="list"<?php selected( $g( 'layout.archive_variant' ), 'list' ); ?>><?php esc_html_e( 'List rows (thumb + text)', 'pubweb' ); ?></option>
+								<option value="headlines"<?php selected( $g( 'layout.archive_variant' ), 'headlines' ); ?>><?php esc_html_e( 'Headlines (title only)', 'pubweb' ); ?></option>
+							</select></td></tr>
+						<tr><th colspan="2" style="padding-bottom:0"><strong><?php esc_html_e( 'Shared options', 'pubweb' ); ?></strong></th></tr>
 						<tr><th><?php esc_html_e( 'Card style', 'pubweb' ); ?></th><td>
 							<select name="pw[layout][card_style]" class="pw-live" data-prop="cardStyle">
 								<option value="classic"<?php selected( $g( 'layout.card_style' ), 'classic' ); ?>><?php esc_html_e( 'Classic (image + text)', 'pubweb' ); ?></option>
@@ -349,11 +372,13 @@ function pubweb_render_admin_page(): void {
 			$('.pw-pv-nav, .pw-pv-heading span').css({ 'color': a, 'border-color': a });
 			$('.pw-pv-chip, .pw-pv-btn').css('background', a);
 			var overlay = $('select[data-prop="cardStyle"]').val() === 'overlay';
+			var feed = $('select[data-prop="homeVar"]').val() === 'feed';
 			$('.pw-pv-chip').toggle($('input[data-prop="chip"]').is(':checked'));
 			$('.pw-pv-heading').toggle($('input[data-prop="sectionHeading"]').is(':checked'));
-			$('.pw-pv-card').css(overlay ? { 'min-height': '110px', 'background-image': 'linear-gradient(180deg,rgba(0,0,0,.1),rgba(0,0,0,.7)),url(https://picsum.photos/300/160)' } : { 'min-height': '', 'background-image': '' });
-			$('.pw-pv-card-img').toggle(!overlay);
-			$('.pw-pv-card-title').css('color', overlay ? '#fff' : '#16181d');
+			$('.pw-pv-card').css(overlay && !feed ? { 'min-height': '110px', 'background-image': 'linear-gradient(180deg,rgba(0,0,0,.1),rgba(0,0,0,.7)),url(https://picsum.photos/300/160)' } : { 'min-height': '', 'background-image': '' });
+			$('.pw-pv-card').css('border', feed ? '0' : '1px solid #eceef1');
+			$('.pw-pv-card-img').toggle(!overlay && !feed);
+			$('.pw-pv-card-title').css('color', overlay && !feed ? '#fff' : '#16181d');
 		}
 		$('.pw-color').wpColorPicker({ change: function (e, ui) {
 			var prop = $(e.target).data('prop'); if (prop) { pv[prop] = ui.color.toString(); render(); }

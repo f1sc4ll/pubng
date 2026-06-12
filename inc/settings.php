@@ -41,7 +41,10 @@ final class PubWeb_Settings {
 				'logo_max_width'    => 180,
 			),
 			'layout'      => array(
-				'homepage_style'     => 'grid',     // grid | list.
+				'home_variant'       => 'grid',     // grid | feed | magazine.
+				'single_variant'     => 'centered', // centered | sidebar | landing.
+				'archive_variant'    => 'grid',     // grid | list | headlines.
+				'homepage_style'     => 'grid',     // (legacy) grid | list.
 				'card_style'         => 'classic',  // classic | overlay (poster cards).
 				'show_sidebar'       => false,       // Full-width by default (max ad real estate).
 				'sticky_header'      => true,
