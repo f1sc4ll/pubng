@@ -420,12 +420,14 @@ function pubweb_render_admin_page(): void {
 				homeVar: v('select[data-prop="homeVar"]') || 'grid',
 				singleVar: v('select[data-prop="singleVar"]') || 'centered',
 				archiveVar: v('select[data-prop="archiveVar"]') || 'grid',
+				logoW: parseInt(v('input[data-prop="logoW"]'), 10) || 180,
 				logo: $('.pw-logo-preview').is(':visible') ? $('.pw-logo-preview').attr('src') : ''
 			};
 		}
 		function esc(x){ return String(x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
 		function header(s){
-			var b = s.logo ? '<img src="'+esc(s.logo)+'" style="max-height:22px;max-width:120px">' : '<strong style="font-size:14px;font-weight:900;color:'+s.headerText+'">'+esc(SITE)+'</strong>';
+			var lw = Math.max(28, Math.round((s.logoW || 180) * 0.42));
+			var b = s.logo ? '<img src="'+esc(s.logo)+'" style="height:auto;max-height:36px;width:auto;max-width:'+lw+'px">' : '<strong style="font-size:14px;font-weight:900;color:'+s.headerText+'">'+esc(SITE)+'</strong>';
 			var nav = (pvMenu && pvMenu.items.length) ? pvMenu.items.slice(0,3).map(esc).join(' · ') : (esc(PW_TXT.menu)+' ≡');
 			return '<div style="display:flex;align-items:center;padding:10px 12px;border-bottom:1px solid #eceef1;background:'+s.headerBg+'">'+b+'<span style="margin-left:auto;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:'+s.accent+'">'+nav+'</span></div>';
 		}
