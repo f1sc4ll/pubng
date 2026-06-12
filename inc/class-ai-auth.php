@@ -99,6 +99,35 @@ final class PubWeb_AI_Auth {
 	}
 
 	/**
+	 * Read the token from raw server headers — for use outside a
+	 * WP_REST_Request (e.g. the early rest_authentication_errors filter).
+	 *
+	 * @return string
+	 */
+	private static function raw_token(): string {
+		$auth = (string) ( $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? '' );
+		if ( 0 === stripos( $auth, 'bearer ' ) ) {
+			return trim( substr( $auth, 7 ) );
+		}
+		return trim( (string) ( $_SERVER['HTTP_X_PUBWEB_TOKEN'] ?? '' ) );
+	}
+
+	/**
+	 * True when a valid token is present in the current request headers.
+	 * Used to grant our namespace access through global REST locks (e.g.
+	 * the "Disable WP REST API" plugin) without weakening them elsewhere.
+	 *
+	 * @return bool
+	 */
+	public static function token_present_and_valid(): bool {
+		if ( ! self::is_configured() ) {
+			return false;
+		}
+		$token = self::raw_token();
+		return '' !== $token && self::token_matches( $token );
+	}
+
+	/**
 	 * Rotate the stored token. Accepts an explicit new token or, when
 	 * empty, generates a 256-bit one. Returns the plaintext ONCE.
 	 *

@@ -72,9 +72,17 @@ add_action(
 			wp_enqueue_style( 'pubweb-critical' );
 			$css    = (string) file_get_contents( $critical ); // phpcs:ignore WordPress.WP.AlternativeFunctions
 			$accent = sanitize_hex_color( (string) pubweb_settings( 'branding.accent_color' ) ) ?: '#1769ff';
-			// Inject the operator's accent as a custom property both stylesheets read.
-			$css = ':root{--pw-accent:' . $accent . '}' . $css;
-			wp_add_inline_style( 'pubweb-critical', $css );
+			$hbg    = sanitize_hex_color( (string) pubweb_settings( 'colors.header_bg' ) ) ?: '#ffffff';
+			$fbg    = sanitize_hex_color( (string) pubweb_settings( 'colors.footer_bg' ) ) ?: '#0e1116';
+			$bbg    = sanitize_hex_color( (string) pubweb_settings( 'colors.body_bg' ) ) ?: '#ffffff';
+			$lw     = (int) pubweb_settings( 'branding.logo_max_width', 180 );
+			$label  = preg_replace( '/["\\\\]/', '', (string) pubweb_settings( 'ads.label_text', 'Anúncios' ) );
+			// Inject the operator's design tokens as custom properties both stylesheets read.
+			$tokens = sprintf(
+				':root{--pw-accent:%s;--pw-header-bg:%s;--pw-footer-bg:%s;--pw-body-bg:%s;--pw-logo-w:%dpx;--pw-ad-label:"%s"}',
+				$accent, $hbg, $fbg, $bbg, $lw, $label
+			);
+			wp_add_inline_style( 'pubweb-critical', $tokens . $css );
 		}
 
 		// Full stylesheet — loaded async via the filter below.

@@ -37,6 +37,12 @@ defined( 'ABSPATH' ) || exit;
 	</div>
 </footer>
 
+<?php if ( pubweb_settings( 'layout.back_to_top' ) ) : ?>
+	<button class="pw-to-top" aria-label="<?php esc_attr_e( 'Back to top', 'pubweb' ); ?>" hidden>
+		<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M18 15l-6-6-6 6"/></svg>
+	</button>
+<?php endif; ?>
+
 <?php
 // Operator-supplied footer code (ad/conversion tags) — admin-trust, raw.
 $pubweb_footer = (string) pubweb_settings( 'custom_code.footer_html' );

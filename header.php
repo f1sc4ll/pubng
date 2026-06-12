@@ -58,6 +58,10 @@ defined( 'ABSPATH' ) || exit;
 	<div class="header-search" hidden><div class="container"><?php get_search_form(); ?></div></div>
 </header>
 
+<?php if ( is_singular( 'post' ) && pubweb_settings( 'layout.reading_progress' ) ) : ?>
+	<div class="pw-progress" aria-hidden="true"><span class="pw-progress__bar"></span></div>
+<?php endif; ?>
+
 <?php pubweb_ad_slot( 'header' ); ?>
 
 <div id="content" class="site-content container">

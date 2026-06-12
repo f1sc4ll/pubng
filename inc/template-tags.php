@@ -57,6 +57,9 @@ add_filter(
 		$classes[] = 'layout-' . sanitize_html_class( (string) pubweb_settings( 'layout.homepage_style', 'grid' ) );
 		if ( pubweb_settings( 'layout.sticky_header' ) ) {
 			$classes[] = 'sticky-header';
+			if ( pubweb_settings( 'layout.sticky_shrink' ) ) {
+				$classes[] = 'pw-shrink';
+			}
 		}
 		$classes[] = 'cols-' . (int) pubweb_settings( 'layout.posts_columns', 3 );
 		return $classes;
@@ -82,4 +85,44 @@ add_filter( 'excerpt_more', static fn(): string => '…' );
 function pubweb_reading_time(): int {
 	$words = str_word_count( wp_strip_all_tags( get_the_content() ) );
 	return max( 1, (int) ceil( $words / 220 ) );
+}
+
+/**
+ * Colored category chip (first category). Color is derived
+ * deterministically from the category slug so each category keeps a
+ * stable hue — the signature "not a generic blog" detail.
+ */
+function pubweb_category_chip(): void {
+	if ( ! pubweb_settings( 'layout.show_category_chip' ) ) {
+		return;
+	}
+	$cats = get_the_category();
+	if ( empty( $cats ) ) {
+		return;
+	}
+	$cat = $cats[0];
+	$hue = abs( crc32( $cat->slug ) ) % 360;
+	printf(
+		'<a class="pw-chip" href="%s" style="--chip:hsl(%d,62%%,45%%)">%s</a>',
+		esc_url( get_category_link( $cat->term_id ) ),
+		$hue,
+		esc_html( $cat->name )
+	);
+}
+
+/**
+ * Section heading with an accent underline bar.
+ *
+ * @param string $text Heading text.
+ */
+function pubweb_section_heading( string $text ): void {
+	if ( ! pubweb_settings( 'layout.section_heading' ) ) {
+		return;
+	}
+	printf( '<h2 class="pw-section-heading"><span>%s</span></h2>', esc_html( $text ) );
+}
+
+/** Card CSS class reflecting the configured card style. */
+function pubweb_card_class(): string {
+	return 'overlay' === pubweb_settings( 'layout.card_style' ) ? 'card card--overlay' : 'card card--classic';
 }

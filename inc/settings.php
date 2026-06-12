@@ -37,13 +37,26 @@ final class PubWeb_Settings {
 			'branding'    => array(
 				'accent_color'      => '#1769ff',
 				'footer_disclaimer' => '',
+				'logo_max_width'    => 180,
 			),
 			'layout'      => array(
-				'homepage_style' => 'grid',  // grid | list.
-				'show_sidebar'   => false,   // Full-width by default (max ad real estate).
-				'sticky_header'  => true,
-				'posts_columns'  => 3,       // 2 or 3 (desktop). Mobile is always 1-2.
-				'excerpt_words'  => 24,
+				'homepage_style'     => 'grid',     // grid | list.
+				'card_style'         => 'classic',  // classic | overlay (poster cards).
+				'show_sidebar'       => false,       // Full-width by default (max ad real estate).
+				'sticky_header'      => true,
+				'sticky_shrink'      => true,        // Shrink header on scroll.
+				'posts_columns'      => 3,           // 2 or 3 (desktop). Mobile is always 1-2.
+				'excerpt_words'      => 24,
+				'featured_hero'      => true,        // Featured lead post above the grid.
+				'section_heading'    => true,        // "Latest" heading with accent bar.
+				'show_category_chip' => true,        // Colored category chip on cards.
+				'back_to_top'        => true,
+				'reading_progress'   => true,        // Progress bar on single posts.
+			),
+			'colors'      => array(
+				'header_bg' => '#ffffff',
+				'footer_bg' => '#0e1116',
+				'body_bg'   => '#ffffff',
 			),
 			'performance' => array(
 				'preload_gpt'       => true,   // Warm the ad stack before first paint.
@@ -58,6 +71,7 @@ final class PubWeb_Settings {
 				'gam_network_code'  => '',     // e.g. "21885211673".
 				'loader_script_url' => '',     // e.g. "https://scr.actview.net/<domain>.js".
 				'ads_on_homepage'   => false,  // Keep the lander fast; monetize deep pages.
+				'label_text'        => 'Anúncios', // Small label above each ad slot.
 				'preconnect_origins'=> array(
 					'https://securepubads.g.doubleclick.net',
 					'https://pagead2.googlesyndication.com',

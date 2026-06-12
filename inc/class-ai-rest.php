@@ -22,6 +22,35 @@ final class PubWeb_AI_REST {
 
 	public static function init(): void {
 		add_action( 'rest_api_init', array( self::class, 'register_routes' ) );
+		// Let our namespace through global REST locks (e.g. "Disable WP
+		// REST API") when a valid token is presented. Priority 99 runs
+		// after such plugins so we can clear their error for our routes.
+		add_filter( 'rest_authentication_errors', array( self::class, 'allow_namespace' ), 99 );
+	}
+
+	/**
+	 * Grant pubweb/v1 access when a valid token is present, even if an
+	 * earlier filter locked REST to logged-in users. Strictly scoped to
+	 * our namespace; the route's own permission_callback re-checks.
+	 *
+	 * @param mixed $result Auth result from earlier filters.
+	 * @return mixed
+	 */
+	public static function allow_namespace( $result ) {
+		if ( true === $result ) {
+			return $result;
+		}
+		$route = '';
+		if ( isset( $GLOBALS['wp']->query_vars['rest_route'] ) ) {
+			$route = (string) $GLOBALS['wp']->query_vars['rest_route'];
+		}
+		if ( '' === $route ) {
+			$route = (string) ( $_SERVER['REQUEST_URI'] ?? '' );
+		}
+		if ( false === strpos( $route, self::NS ) ) {
+			return $result; // Not our namespace — leave any lock in place.
+		}
+		return PubWeb_AI_Auth::token_present_and_valid() ? true : $result;
 	}
 
 	public static function register_routes(): void {

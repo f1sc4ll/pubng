@@ -34,6 +34,39 @@
       });
     }
 
+    // Scroll-driven UI: header shrink, back-to-top, reading progress.
+    var header = document.querySelector('.site-header');
+    var shrink = document.body.classList.contains('pw-shrink');
+    var toTop = document.querySelector('.pw-to-top');
+    var progress = document.querySelector('.pw-progress__bar');
+    var ticking = false;
+
+    function onScroll() {
+      var y = window.pageYOffset || document.documentElement.scrollTop;
+      if (shrink && header) { header.classList.toggle('is-shrunk', y > 12); }
+      if (toTop) {
+        var show = y > 600;
+        toTop.classList.toggle('is-visible', show);
+        if (show) { toTop.removeAttribute('hidden'); }
+      }
+      if (progress) {
+        var h = document.documentElement.scrollHeight - window.innerHeight;
+        progress.style.width = (h > 0 ? (y / h) * 100 : 0) + '%';
+      }
+      ticking = false;
+    }
+    if (shrink || toTop || progress) {
+      window.addEventListener('scroll', function () {
+        if (!ticking) { window.requestAnimationFrame(onScroll); ticking = true; }
+      }, { passive: true });
+      onScroll();
+    }
+    if (toTop) {
+      toTop.addEventListener('click', function () {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    }
+
     // Dismiss the sticky anchor ad.
     var anchorClose = document.querySelector('.pw-anchor__close');
     if (anchorClose) {
