@@ -1,0 +1,46 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/theme.json",
+	"version": 3,
+	"settings": {
+		"appearanceTools": false,
+		"layout": {
+			"contentSize": "760px",
+			"wideSize": "1100px"
+		},
+		"color": {
+			"custom": true,
+			"customGradient": false,
+			"defaultGradients": false,
+			"defaultPalette": false,
+			"palette": [
+				{ "slug": "accent", "color": "#1769ff", "name": "Accent" },
+				{ "slug": "ink", "color": "#16181d", "name": "Ink" },
+				{ "slug": "muted", "color": "#80858d", "name": "Muted" },
+				{ "slug": "surface", "color": "#f6f7f9", "name": "Surface" },
+				{ "slug": "white", "color": "#ffffff", "name": "White" }
+			]
+		},
+		"typography": {
+			"customFontSize": true,
+			"defaultFontSizes": false,
+			"fontSizes": [
+				{ "slug": "small", "size": "0.875rem", "name": "Small" },
+				{ "slug": "medium", "size": "1.0625rem", "name": "Medium" },
+				{ "slug": "large", "size": "1.5rem", "name": "Large" },
+				{ "slug": "x-large", "size": "2.1rem", "name": "Extra large" }
+			]
+		},
+		"spacing": {
+			"units": [ "px", "em", "rem", "%" ]
+		}
+	},
+	"styles": {
+		"typography": {
+			"fontFamily": "system-ui, -apple-system, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif",
+			"lineHeight": "1.6"
+		},
+		"elements": {
+			"link": { "color": { "text": "var(--wp--preset--color--accent)" } }
+		}
+	}
+}
