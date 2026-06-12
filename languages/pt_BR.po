@@ -1,0 +1,445 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: PubWeb 1.6.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: pt_BR\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Domain: pubweb\n"
+
+msgid "PubWeb"
+msgstr ""
+
+msgid "Lightweight, mobile-first publisher theme engineered for speed and ad viewability. Zero render-blocking assets, automatic JSON-LD schema per page type, AI-friendly markup, and a secure token-authenticated REST API (pubweb/v1) for headless theme configuration. Built for ad-monetized content sites where time-to-first-ad is revenue."
+msgstr "Tema de publisher leve e mobile-first, projetado para velocidade e visibilidade de anúncios. Sem assets que bloqueiam a renderização, schema JSON-LD automático por tipo de página, marcação amigável a IA e uma API REST segura autenticada por token (pubweb/v1) para configuração headless do tema. Feito para sites monetizados por anúncios onde o tempo até o primeiro anúncio é receita."
+
+msgid "Page not found"
+msgstr "Página não encontrada"
+
+msgid "The page you were looking for is not here."
+msgstr "A página que você procurava não está aqui."
+
+msgid "%s comment"
+msgid_plural "%s comments"
+msgstr[0] "%s comentário"
+msgstr[1] "%s comentários"
+
+msgid "Back to top"
+msgstr "Voltar ao topo"
+
+msgid "PubWeb requires PHP 8.1 or newer."
+msgstr "O PubWeb requer PHP 8.1 ou superior."
+
+msgid "Skip to content"
+msgstr "Pular para o conteúdo"
+
+msgid "Menu"
+msgstr "Menu"
+
+msgid "Primary"
+msgstr "Principal"
+
+msgid "Search"
+msgstr "Buscar"
+
+msgid "Latest"
+msgstr "Recentes"
+
+msgid "Previous"
+msgstr "Anterior"
+
+msgid "Next"
+msgstr "Próximo"
+
+msgid "Permission denied."
+msgstr "Permissão negada."
+
+msgid "Token is pinned by the PUBWEB_AI_TOKEN constant in wp-config.php."
+msgstr "O token está fixado pela constante PUBWEB_AI_TOKEN no wp-config.php."
+
+msgid "Design"
+msgstr "Design"
+
+msgid "Layout"
+msgstr "Layout"
+
+msgid "Performance"
+msgstr "Desempenho"
+
+msgid "Translation"
+msgstr "Tradução"
+
+msgid "Custom code"
+msgstr "Código personalizado"
+
+msgid "API & Updates"
+msgstr "API e Atualizações"
+
+msgid "Settings saved."
+msgstr "Configurações salvas."
+
+msgid "New API token (shown once — copy it now):"
+msgstr "Novo token da API (exibido uma vez — copie agora):"
+
+msgid "Logo"
+msgstr "Logo"
+
+msgid "Select / upload logo"
+msgstr "Selecionar / enviar logo"
+
+msgid "Remove"
+msgstr "Remover"
+
+msgid "Logo max width (px)"
+msgstr "Largura máxima da logo (px)"
+
+msgid "Accent color"
+msgstr "Cor de destaque"
+
+msgid "Header background"
+msgstr "Fundo do cabeçalho"
+
+msgid "Footer background"
+msgstr "Fundo do rodapé"
+
+msgid "Body background"
+msgstr "Fundo da página"
+
+msgid "Footer disclaimer"
+msgstr "Aviso legal do rodapé"
+
+msgid "Layout per page type"
+msgstr "Layout por tipo de página"
+
+msgid "(each template has its own model — see the reference winners)"
+msgstr "(cada template tem seu próprio modelo)"
+
+msgid "Home"
+msgstr "Início"
+
+msgid "Grid (hero + card grid)"
+msgstr "Grade (destaque + cards)"
+
+msgid "Feed (fast text list, no thumbs)"
+msgstr "Feed (lista de texto rápida, sem miniaturas)"
+
+msgid "Magazine (full-width lead + grid)"
+msgstr "Revista (destaque largo + grade)"
+
+msgid "Post"
+msgstr "Post"
+
+msgid "Centered (720px, no sidebar)"
+msgstr "Centralizado (720px, sem barra lateral)"
+
+msgid "With right sidebar"
+msgstr "Com barra lateral à direita"
+
+msgid "Landing (minimal chrome)"
+msgstr "Landing (mínimo)"
+
+msgid "Category / archive"
+msgstr "Categoria / arquivo"
+
+msgid "Grid (same as home)"
+msgstr "Grade (igual à home)"
+
+msgid "List rows (thumb + text)"
+msgstr "Linhas de lista (miniatura + texto)"
+
+msgid "Headlines (title only)"
+msgstr "Manchetes (só título)"
+
+msgid "Shared options"
+msgstr "Opções compartilhadas"
+
+msgid "Card style"
+msgstr "Estilo do card"
+
+msgid "Classic (image + text)"
+msgstr "Clássico (imagem + texto)"
+
+msgid "Overlay poster"
+msgstr "Pôster sobreposto"
+
+msgid "Desktop columns"
+msgstr "Colunas no desktop"
+
+msgid "Excerpt words"
+msgstr "Palavras do resumo"
+
+msgid "Featured hero on homepage"
+msgstr "Destaque (hero) na página inicial"
+
+msgid "Section heading with accent bar"
+msgstr "Título de seção com barra de destaque"
+
+msgid "Colored category chip on cards"
+msgstr "Selo de categoria colorido nos cards"
+
+msgid "Sticky header"
+msgstr "Cabeçalho fixo"
+
+msgid "Shrink header on scroll"
+msgstr "Encolher cabeçalho ao rolar"
+
+msgid "Show sidebar on posts/archives"
+msgstr "Mostrar barra lateral em posts/arquivos"
+
+msgid "Back-to-top button"
+msgstr "Botão voltar ao topo"
+
+msgid "Reading-progress bar on posts"
+msgstr "Barra de progresso de leitura nos posts"
+
+msgid "System fonts (no web-font latency)"
+msgstr "Fontes do sistema (sem latência de web-fonts)"
+
+msgid "Speculation Rules (prefetch next page)"
+msgstr "Speculation Rules (pré-carregar próxima página)"
+
+msgid "Lazy-load images"
+msgstr "Carregamento lazy de imagens"
+
+msgid "Remove emoji script"
+msgstr "Remover script de emoji"
+
+msgid "Disable oEmbed discovery"
+msgstr "Desativar descoberta de oEmbed"
+
+msgid "Ad delivery is handled automatically by your ad stack (Ad Inserter / network loader) — the theme ships no ad code."
+msgstr "A entrega de anúncios é feita automaticamente pelo seu sistema de ads (Ad Inserter / loader da rede) — o tema não inclui código de anúncio."
+
+msgid "AI provider"
+msgstr "Provedor de IA"
+
+msgid "API key"
+msgstr "Chave da API"
+
+msgid "Model"
+msgstr "Modelo"
+
+msgid "Source language"
+msgstr "Idioma de origem"
+
+msgid "Target languages"
+msgstr "Idiomas de destino"
+
+msgid "Comma-separated BCP-47 codes."
+msgstr "Códigos BCP-47 separados por vírgula."
+
+msgid "Auto-translate new posts"
+msgstr "Traduzir automaticamente novos posts"
+
+msgid "Translate via POST /wp-json/pubweb/v1/translate {text, target}. Keys are stored in the database (admin-trust)."
+msgstr "Traduza via POST /wp-json/pubweb/v1/translate {text, target}. As chaves ficam no banco de dados (confiança de admin)."
+
+msgid "Head HTML"
+msgstr "HTML do head"
+
+msgid "Footer HTML"
+msgstr "HTML do rodapé"
+
+msgid "Custom CSS"
+msgstr "CSS personalizado"
+
+msgid "API status"
+msgstr "Status da API"
+
+msgid "Enabled — namespace pubweb/v1."
+msgstr "Ativada — namespace pubweb/v1."
+
+msgid "Disabled — generate a token below or set PUBWEB_AI_TOKEN in wp-config.php."
+msgstr "Desativada — gere um token abaixo ou defina PUBWEB_AI_TOKEN no wp-config.php."
+
+msgid "Self-hosted updates"
+msgstr "Atualizações auto-hospedadas"
+
+msgid "Update manifest URL"
+msgstr "URL do manifesto de atualização"
+
+msgid "Save settings"
+msgstr "Salvar configurações"
+
+msgid "Token"
+msgstr "Token"
+
+msgid "The token is the credential for the pubweb/v1 API. Only its SHA-256 hash is stored; the plaintext is shown once on generation. Or pin PUBWEB_AI_TOKEN in wp-config.php."
+msgstr "O token é a credencial da API pubweb/v1. Apenas o hash SHA-256 é armazenado; o texto puro é exibido uma vez na geração. Ou fixe PUBWEB_AI_TOKEN no wp-config.php."
+
+msgid "Regenerate token"
+msgstr "Regerar token"
+
+msgid "Generate token"
+msgstr "Gerar token"
+
+msgid "Regenerating invalidates the previous token."
+msgstr "Regerar invalida o token anterior."
+
+msgid "Category"
+msgstr "Categoria"
+
+msgid "Mobile preview — switch page type, scroll inside."
+msgstr "Pré-visualização mobile — troque o tipo de página e role dentro."
+
+msgid "Select logo"
+msgstr "Selecionar logo"
+
+msgid "Use logo"
+msgstr "Usar logo"
+
+msgid "PubWeb API is disabled: no token configured."
+msgstr "A API do PubWeb está desativada: nenhum token configurado."
+
+msgid "Too many requests."
+msgstr "Muitas requisições."
+
+msgid "Invalid or missing token."
+msgstr "Token inválido ou ausente."
+
+msgid "Body must be a non-empty JSON object."
+msgstr "O corpo deve ser um objeto JSON não vazio."
+
+msgid "Body must be a JSON object."
+msgstr "O corpo deve ser um objeto JSON."
+
+msgid "Provide \"text\" and \"target\" (BCP-47)."
+msgstr "Informe \"text\" e \"target\" (BCP-47)."
+
+msgid "Text exceeds the 20,000-character limit."
+msgstr "O texto excede o limite de 20.000 caracteres."
+
+msgid "Token is pinned by the PUBWEB_AI_TOKEN constant; rotate it in wp-config.php."
+msgstr "O token está fixado pela constante PUBWEB_AI_TOKEN; altere-o no wp-config.php."
+
+msgid "Store this token now; it cannot be retrieved again."
+msgstr "Guarde este token agora; ele não pode ser recuperado novamente."
+
+msgid "No translation provider configured."
+msgstr "Nenhum provedor de tradução configurado."
+
+msgid "Unknown provider."
+msgstr "Provedor desconhecido."
+
+msgid "Provider returned no translation."
+msgstr "O provedor não retornou tradução."
+
+msgid "None (disabled)"
+msgstr "Nenhum (desativado)"
+
+msgid "Primary Menu"
+msgstr "Menu principal"
+
+msgid "Footer Menu"
+msgstr "Menu do rodapé"
+
+msgid "Sidebar"
+msgstr "Barra lateral"
+
+msgid "Shown on posts/archives when the sidebar layout is enabled."
+msgstr "Exibida em posts/arquivos quando o layout com barra lateral está ativo."
+
+msgid "Footer"
+msgstr "Rodapé"
+
+msgid "Footer widget area."
+msgstr "Área de widgets do rodapé."
+
+msgid "Pages:"
+msgstr "Páginas:"
+
+msgid "Results for: %s"
+msgstr "Resultados para: %s"
+
+msgid "Search for:"
+msgstr "Buscar por:"
+
+msgid "Search…"
+msgstr "Buscar…"
+
+msgid "Read more"
+msgstr "Leia mais"
+
+msgid "Nothing found"
+msgstr "Nada encontrado"
+
+msgid "Try a search instead."
+msgstr "Tente uma busca."
+
+msgid "%d min read"
+msgstr "%d min de leitura"
+
+msgid "Finance"
+msgstr "Finanças"
+
+msgid "How credit cards actually work"
+msgstr "Como os cartões de crédito realmente funcionam"
+
+msgid "A fast, no-nonsense guide to fees, limits and rewards."
+msgstr "Um guia rápido e direto sobre taxas, limites e recompensas."
+
+msgid "Your guide to smarter money"
+msgstr "Seu guia para um dinheiro mais inteligente"
+
+msgid "Most read"
+msgstr "Mais lidos"
+
+msgid "Related"
+msgstr "Relacionados"
+
+msgid "Latest in this category"
+msgstr "Recentes nesta categoria"
+
+msgid "By %s"
+msgstr "Por %s"
+
+msgid "This file helps AI agents navigate %s efficiently."
+msgstr "Este arquivo ajuda agentes de IA a navegar %s de forma eficiente."
+
+msgid "Sections"
+msgstr "Seções"
+
+msgid "Recent articles"
+msgstr "Artigos recentes"
+
+msgid "Optional"
+msgstr "Opcional"
+
+msgid "Sitemap"
+msgstr "Mapa do site"
+
+msgctxt "Color name"
+msgid "Accent"
+msgstr "Destaque"
+
+msgctxt "Color name"
+msgid "Ink"
+msgstr "Tinta"
+
+msgctxt "Color name"
+msgid "Muted"
+msgstr "Suave"
+
+msgctxt "Color name"
+msgid "Surface"
+msgstr "Superfície"
+
+msgctxt "Color name"
+msgid "White"
+msgstr "Branco"
+
+msgctxt "Font size name"
+msgid "Small"
+msgstr "Pequeno"
+
+msgctxt "Font size name"
+msgid "Medium"
+msgstr "Médio"
+
+msgctxt "Font size name"
+msgid "Large"
+msgstr "Grande"
+
+msgctxt "Font size name"
+msgid "Extra large"
+msgstr "Extra grande"

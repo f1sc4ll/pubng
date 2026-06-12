@@ -87,9 +87,11 @@ function pubweb_handle_admin_save(): void {
 			'footer_disclaimer' => isset( $in['branding']['footer_disclaimer'] ) ? wp_kses_post( (string) $in['branding']['footer_disclaimer'] ) : '',
 		),
 		'colors'      => array(
-			'header_bg' => sanitize_hex_color( $s( 'colors', 'header_bg' ) ) ?: '#ffffff',
-			'footer_bg' => sanitize_hex_color( $s( 'colors', 'footer_bg' ) ) ?: '#0e1116',
-			'body_bg'   => sanitize_hex_color( $s( 'colors', 'body_bg' ) ) ?: '#ffffff',
+			'header_bg'   => sanitize_hex_color( $s( 'colors', 'header_bg' ) ) ?: '#ffffff',
+			'header_text' => sanitize_hex_color( $s( 'colors', 'header_text' ) ) ?: '#16181d',
+			'footer_bg'   => sanitize_hex_color( $s( 'colors', 'footer_bg' ) ) ?: '#0e1116',
+			'footer_text' => sanitize_hex_color( $s( 'colors', 'footer_text' ) ) ?: '#c5c9d1',
+			'body_bg'     => sanitize_hex_color( $s( 'colors', 'body_bg' ) ) ?: '#ffffff',
 		),
 		'layout'      => array(
 			'home_variant'       => in_array( $in['layout']['home_variant'] ?? 'grid', array( 'grid', 'feed', 'magazine' ), true ) ? $in['layout']['home_variant'] : 'grid',
@@ -212,7 +214,9 @@ function pubweb_render_admin_page(): void {
 						<tr><th><?php esc_html_e( 'Logo max width (px)', 'pubweb' ); ?></th><td><input type="number" class="pw-live" data-prop="logoW" name="pw[branding][logo_max_width]" value="<?php echo esc_attr( $g( 'branding.logo_max_width', 180 ) ); ?>" min="60" max="400"></td></tr>
 						<tr><th><?php esc_html_e( 'Accent color', 'pubweb' ); ?></th><td><input type="text" class="pw-color pw-live" data-prop="accent" name="pw[branding][accent_color]" value="<?php echo esc_attr( $g( 'branding.accent_color' ) ); ?>"></td></tr>
 						<tr><th><?php esc_html_e( 'Header background', 'pubweb' ); ?></th><td><input type="text" class="pw-color pw-live" data-prop="headerBg" name="pw[colors][header_bg]" value="<?php echo esc_attr( $g( 'colors.header_bg' ) ); ?>"></td></tr>
+						<tr><th><?php esc_html_e( 'Header text color', 'pubweb' ); ?></th><td><input type="text" class="pw-color pw-live" data-prop="headerText" name="pw[colors][header_text]" value="<?php echo esc_attr( $g( 'colors.header_text' ) ); ?>"></td></tr>
 						<tr><th><?php esc_html_e( 'Footer background', 'pubweb' ); ?></th><td><input type="text" class="pw-color pw-live" data-prop="footerBg" name="pw[colors][footer_bg]" value="<?php echo esc_attr( $g( 'colors.footer_bg' ) ); ?>"></td></tr>
+						<tr><th><?php esc_html_e( 'Footer text color', 'pubweb' ); ?></th><td><input type="text" class="pw-color pw-live" data-prop="footerText" name="pw[colors][footer_text]" value="<?php echo esc_attr( $g( 'colors.footer_text' ) ); ?>"></td></tr>
 						<tr><th><?php esc_html_e( 'Body background', 'pubweb' ); ?></th><td><input type="text" class="pw-color pw-live" data-prop="bodyBg" name="pw[colors][body_bg]" value="<?php echo esc_attr( $g( 'colors.body_bg' ) ); ?>"></td></tr>
 						<tr><th><?php esc_html_e( 'Footer disclaimer', 'pubweb' ); ?></th><td><textarea name="pw[branding][footer_disclaimer]" rows="2" class="large-text"><?php echo esc_textarea( $g( 'branding.footer_disclaimer' ) ); ?></textarea></td></tr>
 					</table>
@@ -386,10 +390,10 @@ function pubweb_render_admin_page(): void {
 			'mostRead'      => __( 'Most read', 'pubweb' ),
 			'menu'          => __( 'Menu', 'pubweb' ),
 			'sampleCat'     => __( 'Finance', 'pubweb' ),
-			'sampleTitle'   => __( ''+PW_TXT.sampleTitle+'', 'pubweb' ),
-			'sampleExcerpt' => __( ''+PW_TXT.sampleExcerpt+'', 'pubweb' ),
-			'sampleHero'    => __( ''+PW_TXT.sampleHero+'', 'pubweb' ),
-			'latestInCat'   => __( ''+PW_TXT.latestInCat+'', 'pubweb' ),
+			'sampleTitle'   => __( 'How credit cards actually work', 'pubweb' ),
+			'sampleExcerpt' => __( 'A fast, no-nonsense guide to fees, limits and rewards.', 'pubweb' ),
+			'sampleHero'    => __( 'Your guide to smarter money', 'pubweb' ),
+			'latestInCat'   => __( 'Latest in this category', 'pubweb' ),
 			/* translators: %s: sample author name in the preview. */
 			'byline'        => sprintf( __( 'By %s', 'pubweb' ), 'Megan Caldwell' ) . ' · ' . gmdate( 'M Y' ),
 			/* translators: %d: sample reading time in minutes. */
@@ -405,7 +409,9 @@ function pubweb_render_admin_page(): void {
 			return {
 				accent: v('input[data-prop="accent"]') || '#1769ff',
 				headerBg: v('input[data-prop="headerBg"]') || '#ffffff',
+				headerText: v('input[data-prop="headerText"]') || '#16181d',
 				footerBg: v('input[data-prop="footerBg"]') || '#0e1116',
+				footerText: v('input[data-prop="footerText"]') || '#c5c9d1',
 				bodyBg: v('input[data-prop="bodyBg"]') || '#ffffff',
 				overlay: v('select[data-prop="cardStyle"]') === 'overlay',
 				chip: $('input[data-prop="chip"]').is(':checked'),
@@ -419,11 +425,11 @@ function pubweb_render_admin_page(): void {
 		}
 		function esc(x){ return String(x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
 		function header(s){
-			var b = s.logo ? '<img src="'+esc(s.logo)+'" style="max-height:22px;max-width:120px">' : '<strong style="font-size:14px;font-weight:900">'+esc(SITE)+'</strong>';
+			var b = s.logo ? '<img src="'+esc(s.logo)+'" style="max-height:22px;max-width:120px">' : '<strong style="font-size:14px;font-weight:900;color:'+s.headerText+'">'+esc(SITE)+'</strong>';
 			var nav = (pvMenu && pvMenu.items.length) ? pvMenu.items.slice(0,3).map(esc).join(' · ') : (esc(PW_TXT.menu)+' ≡');
 			return '<div style="display:flex;align-items:center;padding:10px 12px;border-bottom:1px solid #eceef1;background:'+s.headerBg+'">'+b+'<span style="margin-left:auto;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:'+s.accent+'">'+nav+'</span></div>';
 		}
-		function footer(s){ return '<div style="padding:14px 12px;font-size:10px;color:#c5c9d1;background:'+s.footerBg+'">© '+esc(SITE)+'</div>'; }
+		function footer(s){ return '<div style="padding:14px 12px;font-size:10px;color:'+s.footerText+';background:'+s.footerBg+'">© '+esc(SITE)+'</div>'; }
 		function chip(s){ return s.chip ? '<span style="display:inline-block;font-size:9px;font-weight:800;text-transform:uppercase;color:#fff;background:'+s.accent+';padding:2px 7px;border-radius:4px;margin-bottom:5px">'+PW_TXT.sampleCat+'</span><br>' : ''; }
 		function heading(s,t){ return s.heading ? '<div style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;font-weight:800;margin:0 0 10px"><span style="display:inline-block;padding-bottom:5px;border-bottom:3px solid '+s.accent+'">'+t+'</span></div>' : ''; }
 		function lines(n){ var h=''; for(var i=0;i<n;i++){ h+='<div style="height:8px;background:#eceef1;border-radius:3px;margin:6px 0;width:'+(i%3===2?'70%':'100%')+'"></div>'; } return h; }

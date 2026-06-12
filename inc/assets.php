@@ -46,13 +46,15 @@ add_action(
 			$css    = (string) file_get_contents( $critical ); // phpcs:ignore WordPress.WP.AlternativeFunctions
 			$accent = sanitize_hex_color( (string) pubweb_settings( 'branding.accent_color' ) ) ?: '#1769ff';
 			$hbg    = sanitize_hex_color( (string) pubweb_settings( 'colors.header_bg' ) ) ?: '#ffffff';
+			$htx    = sanitize_hex_color( (string) pubweb_settings( 'colors.header_text' ) ) ?: '#16181d';
 			$fbg    = sanitize_hex_color( (string) pubweb_settings( 'colors.footer_bg' ) ) ?: '#0e1116';
+			$ftx    = sanitize_hex_color( (string) pubweb_settings( 'colors.footer_text' ) ) ?: '#c5c9d1';
 			$bbg    = sanitize_hex_color( (string) pubweb_settings( 'colors.body_bg' ) ) ?: '#ffffff';
 			$lw     = (int) pubweb_settings( 'branding.logo_max_width', 180 );
 			// Inject the operator's design tokens as custom properties both stylesheets read.
 			$tokens = sprintf(
-				':root{--pw-accent:%s;--pw-header-bg:%s;--pw-footer-bg:%s;--pw-body-bg:%s;--pw-logo-w:%dpx}',
-				$accent, $hbg, $fbg, $bbg, $lw
+				':root{--pw-accent:%s;--pw-header-bg:%s;--pw-header-text:%s;--pw-footer-bg:%s;--pw-footer-text:%s;--pw-body-bg:%s;--pw-logo-w:%dpx}',
+				$accent, $hbg, $htx, $fbg, $ftx, $bbg, $lw
 			);
 			wp_add_inline_style( 'pubweb-critical', $tokens . $css );
 		}

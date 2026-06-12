@@ -58,9 +58,11 @@ final class PubWeb_Settings {
 				'reading_progress'   => true,        // Progress bar on single posts.
 			),
 			'colors'      => array(
-				'header_bg' => '#ffffff',
-				'footer_bg' => '#0e1116',
-				'body_bg'   => '#ffffff',
+				'header_bg'   => '#ffffff',
+				'header_text' => '#16181d',
+				'footer_bg'   => '#0e1116',
+				'footer_text' => '#c5c9d1',
+				'body_bg'     => '#ffffff',
 			),
 			'performance' => array(
 				'speculation_rules' => true,   // Prefetch next page on hover/viewport.

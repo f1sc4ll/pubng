@@ -11,7 +11,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'PUBWEB_VERSION', '1.6.0' );
+define( 'PUBWEB_VERSION', '1.6.1' );
 define( 'PUBWEB_DIR', trailingslashit( get_template_directory() ) );
 define( 'PUBWEB_URI', trailingslashit( get_template_directory_uri() ) );
 
