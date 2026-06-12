@@ -67,15 +67,6 @@
       });
     }
 
-    // Dismiss the sticky anchor ad.
-    var anchorClose = document.querySelector('.pw-anchor__close');
-    if (anchorClose) {
-      anchorClose.addEventListener('click', function () {
-        var anchor = document.getElementById('pw-anchor');
-        if (anchor) { anchor.classList.add('is-closed'); }
-      });
-    }
-
     // Close the mobile menu when a link is tapped.
     if (nav) {
       nav.addEventListener('click', function (e) {

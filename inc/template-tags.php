@@ -15,6 +15,15 @@ function pubweb_branding(): void {
 		the_custom_logo();
 		return;
 	}
+	$logo_id = (int) pubweb_settings( 'branding.logo_id' );
+	if ( $logo_id ) {
+		printf(
+			'<a class="custom-logo-link" href="%s" rel="home">%s</a>',
+			esc_url( home_url( '/' ) ),
+			wp_get_attachment_image( $logo_id, 'medium', false, array( 'class' => 'custom-logo', 'alt' => get_bloginfo( 'name' ) ) )
+		);
+		return;
+	}
 	printf(
 		'<a class="site-title" href="%s" rel="home">%s</a>',
 		esc_url( home_url( '/' ) ),

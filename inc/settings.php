@@ -37,6 +37,7 @@ final class PubWeb_Settings {
 			'branding'    => array(
 				'accent_color'      => '#1769ff',
 				'footer_disclaimer' => '',
+				'logo_id'           => 0,    // Attachment ID (media library).
 				'logo_max_width'    => 180,
 			),
 			'layout'      => array(
@@ -59,29 +60,11 @@ final class PubWeb_Settings {
 				'body_bg'   => '#ffffff',
 			),
 			'performance' => array(
-				'preload_gpt'       => true,   // Warm the ad stack before first paint.
 				'speculation_rules' => true,   // Prefetch next page on hover/viewport.
 				'lazy_images'       => true,
 				'remove_emoji'      => true,
 				'system_fonts'      => true,   // Zero web-font latency by default.
 				'disable_embeds'    => true,
-			),
-			'ads'         => array(
-				'enabled'           => false,  // Off until a loader is configured.
-				'gam_network_code'  => '',     // e.g. "21885211673".
-				'loader_script_url' => '',     // e.g. "https://scr.actview.net/<domain>.js".
-				'ads_on_homepage'   => false,  // Keep the lander fast; monetize deep pages.
-				'label_text'        => 'Anúncios', // Small label above each ad slot.
-				'preconnect_origins'=> array(
-					'https://securepubads.g.doubleclick.net',
-					'https://pagead2.googlesyndication.com',
-				),
-				/**
-				 * Slot definitions are rendered as empty, space-reserved
-				 * wrappers; the external loader injects the actual GPT unit.
-				 * Naming mirrors the reference network: {device}_{position}.
-				 */
-				'slots'             => array(),
 			),
 			'schema'      => array(
 				'enabled'        => true,
@@ -100,6 +83,14 @@ final class PubWeb_Settings {
 				'head_html'   => '',
 				'footer_html' => '',
 				'custom_css'  => '',
+			),
+			'translation' => array(
+				'provider'       => 'none',  // none | openai | grok | claude | openrouter.
+				'api_key'        => '',      // Provider API key (admin-trust).
+				'model'          => '',      // e.g. gpt-4o-mini, grok-2, claude-3-5-haiku, etc.
+				'source_lang'    => 'en',    // BCP-47 source language.
+				'target_langs'   => array(), // e.g. ['pt-BR','es','fr'].
+				'auto_translate' => false,   // Translate new posts on publish.
 			),
 			'updater'     => array(
 				'enabled'      => false, // Activate when V1 ships.
@@ -128,7 +119,7 @@ final class PubWeb_Settings {
 	/**
 	 * Read the whole tree or a single dotted path.
 	 *
-	 * @param string|null $key     Dot path, e.g. "ads.gam_network_code".
+	 * @param string|null $key     Dot path, e.g. "layout.card_style".
 	 * @param mixed       $default Fallback when missing.
 	 * @return mixed
 	 */
@@ -181,11 +172,6 @@ final class PubWeb_Settings {
 			}
 			$default = $schema[ $key ];
 
-			// "ads.slots" is a list of objects — validated by the ads module.
-			if ( 'slots' === $key && is_array( $value ) ) {
-				$out[ $key ] = pubweb_sanitize_ad_slots( $value );
-				continue;
-			}
 			if ( is_array( $default ) && self::is_assoc( $default ) ) {
 				$out[ $key ] = self::filter_against_defaults(
 					$default,

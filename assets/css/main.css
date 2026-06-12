@@ -81,11 +81,6 @@
 .comment-list{list-style:none;margin:0;padding:0}
 .comment-list .comment{margin-bottom:18px}
 
-/* Sticky anchor ad */
-.pw-anchor{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;justify-content:center;align-items:center;min-height:50px;background:#fff;box-shadow:0 -2px 12px rgba(0,0,0,.12);padding:4px}
-.pw-anchor.is-closed{display:none}
-.pw-anchor__close{position:absolute;top:-26px;right:6px;width:26px;height:26px;border:0;border-radius:6px 6px 0 0;background:#fff;box-shadow:0 -2px 8px rgba(0,0,0,.12);font-size:18px;line-height:1;cursor:pointer;color:#52565e}
-
 /* Back-to-top button */
 .pw-to-top{position:fixed;right:18px;bottom:18px;z-index:55;width:46px;height:46px;border:0;border-radius:50%;background:var(--pw-accent);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.2);opacity:0;transform:translateY(8px);transition:opacity .2s ease,transform .2s ease}
 .pw-to-top.is-visible{opacity:1;transform:translateY(0)}

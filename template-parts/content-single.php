@@ -25,8 +25,6 @@ defined( 'ABSPATH' ) || exit;
 		</div>
 	</header>
 
-	<?php pubweb_ad_slot( 'before_content' ); ?>
-
 	<?php if ( has_post_thumbnail() ) : ?>
 		<figure class="single-featured">
 			<?php the_post_thumbnail( 'large', array( 'fetchpriority' => 'high' ) ); ?>
@@ -42,8 +40,6 @@ defined( 'ABSPATH' ) || exit;
 		) );
 		?>
 	</div>
-
-	<?php pubweb_ad_slot( 'after_content' ); ?>
 
 	<footer class="single-footer">
 		<?php the_tags( '<div class="tags">', '', '</div>' ); ?>

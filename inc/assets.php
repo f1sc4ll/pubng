@@ -2,13 +2,15 @@
 /**
  * Asset loading — the speed-critical path.
  *
- * Strategy (validated against the reference publisher sites):
+ * Strategy:
  *   1. Inline critical CSS in <head> so first paint never waits on a
  *      stylesheet request.
  *   2. Load the full stylesheet asynchronously (print-media swap).
- *   3. Emit ad-stack resource hints (preconnect + optional gpt.js
- *      preload) as early as possible — time-to-first-ad is revenue.
- *   4. Ship theme JS with `defer`, no jQuery on the frontend.
+ *   3. Ship theme JS with `defer`, no jQuery on the frontend.
+ *
+ * Ad delivery is intentionally NOT a theme concern — it is injected
+ * automatically (Ad Inserter / the ad network loader), so the theme
+ * ships no GPT preload or ad-origin hints.
  *
  * @package PubWeb
  */
@@ -16,45 +18,16 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Resource hints: print BEFORE everything else in <head> so the browser
- * opens ad/CDN connections during HTML parse. Hooked at priority 0.
+ * Preconnect to the web-font origin only when system fonts are disabled.
+ * Hooked at priority 0 so the hint lands early in <head>.
  */
 add_action(
 	'wp_head',
 	static function (): void {
-		$ads = pubweb_settings( 'ads' );
-
-		$origins = array();
 		if ( pubweb_settings( 'performance.system_fonts' ) ) {
-			// System fonts → no font origin needed.
-		} else {
-			$origins[] = 'https://fonts.gstatic.com';
+			return; // System fonts → no external origin to warm.
 		}
-
-		if ( ! empty( $ads['enabled'] ) ) {
-			foreach ( (array) ( $ads['preconnect_origins'] ?? array() ) as $origin ) {
-				$origins[] = $origin;
-			}
-			if ( ! empty( $ads['loader_script_url'] ) ) {
-				$parts = wp_parse_url( $ads['loader_script_url'] );
-				if ( ! empty( $parts['scheme'] ) && ! empty( $parts['host'] ) ) {
-					$origins[] = $parts['scheme'] . '://' . $parts['host'];
-				}
-			}
-		}
-
-		foreach ( array_unique( array_filter( $origins ) ) as $origin ) {
-			printf(
-				'<link rel="preconnect" href="%s" crossorigin>' . "\n",
-				esc_url( $origin )
-			);
-		}
-
-		// Preload the GPT library so the first ad request is not gated
-		// behind script discovery. Only when ads are on and requested.
-		if ( ! empty( $ads['enabled'] ) && pubweb_settings( 'performance.preload_gpt' ) ) {
-			echo '<link rel="preload" as="script" href="https://securepubads.g.doubleclick.net/tag/js/gpt.js" crossorigin>' . "\n";
-		}
+		echo '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' . "\n";
 	},
 	0
 );
@@ -76,11 +49,10 @@ add_action(
 			$fbg    = sanitize_hex_color( (string) pubweb_settings( 'colors.footer_bg' ) ) ?: '#0e1116';
 			$bbg    = sanitize_hex_color( (string) pubweb_settings( 'colors.body_bg' ) ) ?: '#ffffff';
 			$lw     = (int) pubweb_settings( 'branding.logo_max_width', 180 );
-			$label  = preg_replace( '/["\\\\]/', '', (string) pubweb_settings( 'ads.label_text', 'Anúncios' ) );
 			// Inject the operator's design tokens as custom properties both stylesheets read.
 			$tokens = sprintf(
-				':root{--pw-accent:%s;--pw-header-bg:%s;--pw-footer-bg:%s;--pw-body-bg:%s;--pw-logo-w:%dpx;--pw-ad-label:"%s"}',
-				$accent, $hbg, $fbg, $bbg, $lw, $label
+				':root{--pw-accent:%s;--pw-header-bg:%s;--pw-footer-bg:%s;--pw-body-bg:%s;--pw-logo-w:%dpx}',
+				$accent, $hbg, $fbg, $bbg, $lw
 			);
 			wp_add_inline_style( 'pubweb-critical', $tokens . $css );
 		}

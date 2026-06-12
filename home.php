@@ -4,8 +4,6 @@
  * dedicated posts page). A featured lead post above the card grid.
  *
  * Note: this never overrides a static front page — that uses page.php.
- * Ads stay off here unless ads.ads_on_homepage is enabled, keeping the
- * entry page's LCP fast (the "ads off the lander" pattern).
  *
  * @package PubWeb
  */

@@ -12,6 +12,5 @@ if ( ! is_active_sidebar( 'sidebar-1' ) ) {
 }
 ?>
 <aside class="sidebar widget-area" role="complementary">
-	<?php pubweb_ad_slot( 'sidebar' ); ?>
 	<?php dynamic_sidebar( 'sidebar-1' ); ?>
 </aside>

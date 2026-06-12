@@ -1,6 +1,6 @@
 /* PubWeb critical CSS — inlined in <head>, mobile-first, above-the-fold.
    Design tokens (--pw-accent, --pw-header-bg, --pw-footer-bg, --pw-body-bg,
-   --pw-logo-w, --pw-ad-label) are injected at runtime from theme settings. */
+   --pw-logo-w) are injected at runtime from theme settings. */
 
 *,*::before,*::after{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%;line-height:1.5;scroll-behavior:smooth}
@@ -47,11 +47,6 @@ body.sticky-header .site-header{position:sticky;top:0;z-index:50}
 .pw-chip{display:inline-block;font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:#fff;background:var(--chip,var(--pw-accent));padding:3px 9px;border-radius:4px;margin-bottom:8px}
 .pw-chip:hover{text-decoration:none;filter:brightness(1.08)}
 
-/* Ad slots: reserved space (anti-CLS) + label */
-.pw-ad{position:relative;display:block;margin:20px auto;text-align:center;overflow:hidden;background:#f6f7f9;border-radius:8px}
-.pw-ad::before{content:var(--pw-ad-label,"");position:absolute;top:4px;left:8px;font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#9aa0a8;font-weight:700}
-.pw-ad--mobile{display:block}.pw-ad--desktop{display:none}
-
 /* Post grid */
 .post-grid{display:grid;grid-template-columns:1fr;gap:22px}
 
@@ -82,7 +77,6 @@ body.sticky-header .site-header{position:sticky;top:0;z-index:50}
 @media(min-width:768px){
   .post-grid{grid-template-columns:repeat(2,1fr)}
   .single-title{font-size:2.2rem}
-  .pw-ad--desktop{display:block}.pw-ad--mobile{display:none}
   .pw-section-heading{font-size:1.05rem}
 }
 @media(min-width:1024px){

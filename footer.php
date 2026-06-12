@@ -9,8 +9,6 @@ defined( 'ABSPATH' ) || exit;
 ?>
 </div><!-- .site-content -->
 
-<?php pubweb_ad_slot( 'footer' ); ?>
-
 <footer class="site-footer" role="contentinfo">
 	<div class="container footer-inner">
 		<?php if ( is_active_sidebar( 'footer-1' ) ) : ?>

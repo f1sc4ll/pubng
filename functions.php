@@ -11,7 +11,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'PUBWEB_VERSION', '1.1.0' );
+define( 'PUBWEB_VERSION', '1.2.0' );
 define( 'PUBWEB_DIR', trailingslashit( get_template_directory() ) );
 define( 'PUBWEB_URI', trailingslashit( get_template_directory_uri() ) );
 
@@ -47,10 +47,10 @@ $pubweb_modules = array(
 	'inc/template-tags.php',   // Template helper functions.
 	'inc/schema.php',          // JSON-LD per page type.
 	'inc/seo.php',             // Meta/OG/canonical (only without an SEO plugin).
-	'inc/ads.php',             // Ad slot config + client-side loader wiring.
 	'inc/ai-discovery.php',    // /llms.txt for AI crawlers.
 	'inc/admin.php',           // wp-admin settings panel (Appearance → PubWeb).
 	'inc/class-ai-auth.php',   // Token auth, rate limit, audit log.
+	'inc/class-ai-translate.php', // AI translation provider abstraction.
 	'inc/class-ai-rest.php',   // REST controller for pubweb/v1.
 	'inc/class-updater.php',   // S3/JSON theme updater (gated off by default).
 );

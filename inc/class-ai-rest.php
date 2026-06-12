@@ -81,19 +81,6 @@ final class PubWeb_AI_REST {
 			'permission_callback' => $guard,
 		) );
 
-		register_rest_route( self::NS, '/ads', array(
-			array(
-				'methods'             => 'GET',
-				'callback'            => array( self::class, 'get_ads' ),
-				'permission_callback' => $guard,
-			),
-			array(
-				'methods'             => 'PUT',
-				'callback'            => array( self::class, 'put_ads' ),
-				'permission_callback' => $guard,
-			),
-		) );
-
 		register_rest_route( self::NS, '/custom-code', array(
 			array(
 				'methods'             => 'GET',
@@ -105,6 +92,12 @@ final class PubWeb_AI_REST {
 				'callback'            => array( self::class, 'put_custom_code' ),
 				'permission_callback' => $guard,
 			),
+		) );
+
+		register_rest_route( self::NS, '/translate', array(
+			'methods'             => 'POST',
+			'callback'            => array( self::class, 'translate' ),
+			'permission_callback' => $guard,
 		) );
 
 		register_rest_route( self::NS, '/audit', array(
@@ -133,7 +126,6 @@ final class PubWeb_AI_REST {
 			'is_child'     => is_child_theme(),
 			'name'         => $theme->get( 'Name' ),
 			'seo_plugin'   => pubweb_seo_plugin_active(),
-			'ads_enabled'  => (bool) pubweb_settings( 'ads.enabled' ),
 		) );
 	}
 
@@ -153,20 +145,6 @@ final class PubWeb_AI_REST {
 		$updated = PubWeb_Settings::update( $body );
 		PubWeb_AI_Auth::audit( $req, 200, 'patch:' . implode( ',', array_keys( $body ) ) );
 		return self::ok( $req, $updated );
-	}
-
-	public static function get_ads( WP_REST_Request $req ): WP_REST_Response {
-		return self::ok( $req, pubweb_settings( 'ads' ) );
-	}
-
-	public static function put_ads( WP_REST_Request $req ): WP_REST_Response|WP_Error {
-		$body = $req->get_json_params();
-		if ( ! is_array( $body ) ) {
-			return self::bad_request( __( 'Body must be a JSON object.', 'pubweb' ) );
-		}
-		$updated = PubWeb_Settings::update( array( 'ads' => $body ) );
-		PubWeb_AI_Auth::audit( $req, 200, 'put:ads' );
-		return self::ok( $req, $updated['ads'] );
 	}
 
 	public static function get_custom_code( WP_REST_Request $req ): WP_REST_Response {
@@ -196,6 +174,29 @@ final class PubWeb_AI_REST {
 		$updated = PubWeb_Settings::update( array( 'custom_code' => $patch ) );
 		PubWeb_AI_Auth::audit( $req, 200, 'put:custom_code:' . implode( ',', array_keys( $patch ) ) );
 		return self::ok( $req, $updated['custom_code'] );
+	}
+
+	/**
+	 * Translate text via the configured AI provider.
+	 * Body: { text, target, source? }.
+	 */
+	public static function translate( WP_REST_Request $req ): WP_REST_Response|WP_Error {
+		$body   = (array) $req->get_json_params();
+		$text   = isset( $body['text'] ) ? (string) $body['text'] : '';
+		$target = isset( $body['target'] ) ? sanitize_text_field( (string) $body['target'] ) : '';
+		if ( '' === $text || '' === $target ) {
+			return self::bad_request( __( 'Provide "text" and "target" (BCP-47).', 'pubweb' ) );
+		}
+		$source = isset( $body['source'] ) ? sanitize_text_field( (string) $body['source'] ) : '';
+		$result = PubWeb_AI_Translate::translate( $text, $target, $source );
+		if ( is_wp_error( $result ) ) {
+			return $result;
+		}
+		PubWeb_AI_Auth::audit( $req, 200, 'translate:' . $target );
+		return self::ok( $req, array(
+			'translation' => $result,
+			'target'      => $target,
+		) );
 	}
 
 	public static function get_audit( WP_REST_Request $req ): WP_REST_Response {
