@@ -156,6 +156,22 @@ function pubweb_render_admin_page(): void {
 	$token_set = ( defined( 'PUBWEB_AI_TOKEN' ) && '' !== (string) PUBWEB_AI_TOKEN ) || '' !== (string) get_option( 'pubweb_ai_token_hash', '' );
 	$logo_id   = (int) $g( 'branding.logo_id' );
 	$logo_url  = $logo_id ? wp_get_attachment_image_url( $logo_id, 'medium' ) : '';
+	// Registered nav menus (for the interactive preview menu picker).
+	$pw_menu_data = array();
+	foreach ( wp_get_nav_menus() as $pw_m ) {
+		$pw_items  = wp_get_nav_menu_items( $pw_m->term_id );
+		$pw_labels = array();
+		if ( is_array( $pw_items ) ) {
+			foreach ( array_slice( $pw_items, 0, 6 ) as $pw_it ) {
+				$pw_labels[] = $pw_it->title;
+			}
+		}
+		$pw_menu_data[] = array(
+			'id'    => (int) $pw_m->term_id,
+			'name'  => $pw_m->name,
+			'items' => $pw_labels,
+		);
+	}
 	$tabs      = array(
 		'design'  => __( 'Design', 'pubweb' ),
 		'layout'  => __( 'Layout', 'pubweb' ),
@@ -333,6 +349,20 @@ function pubweb_render_admin_page(): void {
 				<div class="pw-phone-screen" style="height:540px;overflow-y:auto;border-radius:18px;background:#fff;font-family:system-ui,-apple-system,sans-serif;font-size:13px;line-height:1.45;color:#16181d"></div>
 			</div>
 			<p class="description" style="text-align:center;margin-top:8px"><?php esc_html_e( 'Mobile preview — switch page type, scroll inside.', 'pubweb' ); ?></p>
+			<div style="margin-top:10px;font-size:12px">
+				<label><?php esc_html_e( 'Preview menu', 'pubweb' ); ?>:
+					<select class="pw-menu-select">
+						<option value="">— <?php esc_html_e( 'none', 'pubweb' ); ?> —</option>
+						<?php foreach ( $pw_menu_data as $pw_md ) : ?>
+							<option value="<?php echo esc_attr( $pw_md['id'] ); ?>"><?php echo esc_html( $pw_md['name'] ); ?></option>
+						<?php endforeach; ?>
+					</select>
+				</label>
+				<a class="pw-menu-edit" href="<?php echo esc_url( admin_url( 'nav-menus.php' ) ); ?>" target="_blank" rel="noopener" style="margin-left:8px"><?php esc_html_e( 'Edit menus', 'pubweb' ); ?> →</a>
+				<?php if ( empty( $pw_menu_data ) ) : ?>
+					<p class="description"><?php esc_html_e( 'No menus yet — create one in Appearance → Menus.', 'pubweb' ); ?></p>
+				<?php endif; ?>
+			</div>
 		</div>
 		</div>
 	</div>
@@ -350,6 +380,25 @@ function pubweb_render_admin_page(): void {
 
 		// ---- Live mobile preview ----
 		var SITE = <?php echo wp_json_encode( get_bloginfo( 'name' ) ); ?>;
+		var PW_TXT = <?php echo wp_json_encode( array(
+			'latest'        => __( 'Latest', 'pubweb' ),
+			'related'       => __( 'Related', 'pubweb' ),
+			'mostRead'      => __( 'Most read', 'pubweb' ),
+			'menu'          => __( 'Menu', 'pubweb' ),
+			'sampleCat'     => __( 'Finance', 'pubweb' ),
+			'sampleTitle'   => __( ''+PW_TXT.sampleTitle+'', 'pubweb' ),
+			'sampleExcerpt' => __( ''+PW_TXT.sampleExcerpt+'', 'pubweb' ),
+			'sampleHero'    => __( ''+PW_TXT.sampleHero+'', 'pubweb' ),
+			'latestInCat'   => __( ''+PW_TXT.latestInCat+'', 'pubweb' ),
+			/* translators: %s: sample author name in the preview. */
+			'byline'        => sprintf( __( 'By %s', 'pubweb' ), 'Megan Caldwell' ) . ' · ' . gmdate( 'M Y' ),
+			/* translators: %d: sample reading time in minutes. */
+			'minRead'       => sprintf( __( '%d min read', 'pubweb' ), 4 ),
+		) ); ?>;
+		var PW_MENUS = <?php echo wp_json_encode( $pw_menu_data ); ?>;
+		var MENU_EDIT = <?php echo wp_json_encode( admin_url( 'nav-menus.php?action=edit&menu=' ) ); ?>;
+		var MENU_BASE = <?php echo wp_json_encode( admin_url( 'nav-menus.php' ) ); ?>;
+		var pvMenu = null;
 		var pvType = 'home';
 		function v(sel){ return $(sel).val(); }
 		function st(){
@@ -371,22 +420,23 @@ function pubweb_render_admin_page(): void {
 		function esc(x){ return String(x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
 		function header(s){
 			var b = s.logo ? '<img src="'+esc(s.logo)+'" style="max-height:22px;max-width:120px">' : '<strong style="font-size:14px;font-weight:900">'+esc(SITE)+'</strong>';
-			return '<div style="display:flex;align-items:center;padding:10px 12px;border-bottom:1px solid #eceef1;background:'+s.headerBg+'">'+b+'<span style="margin-left:auto;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:'+s.accent+'">Menu ≡</span></div>';
+			var nav = (pvMenu && pvMenu.items.length) ? pvMenu.items.slice(0,3).map(esc).join(' · ') : (esc(PW_TXT.menu)+' ≡');
+			return '<div style="display:flex;align-items:center;padding:10px 12px;border-bottom:1px solid #eceef1;background:'+s.headerBg+'">'+b+'<span style="margin-left:auto;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:'+s.accent+'">'+nav+'</span></div>';
 		}
 		function footer(s){ return '<div style="padding:14px 12px;font-size:10px;color:#c5c9d1;background:'+s.footerBg+'">© '+esc(SITE)+'</div>'; }
-		function chip(s){ return s.chip ? '<span style="display:inline-block;font-size:9px;font-weight:800;text-transform:uppercase;color:#fff;background:'+s.accent+';padding:2px 7px;border-radius:4px;margin-bottom:5px">Finance</span><br>' : ''; }
+		function chip(s){ return s.chip ? '<span style="display:inline-block;font-size:9px;font-weight:800;text-transform:uppercase;color:#fff;background:'+s.accent+';padding:2px 7px;border-radius:4px;margin-bottom:5px">'+PW_TXT.sampleCat+'</span><br>' : ''; }
 		function heading(s,t){ return s.heading ? '<div style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;font-weight:800;margin:0 0 10px"><span style="display:inline-block;padding-bottom:5px;border-bottom:3px solid '+s.accent+'">'+t+'</span></div>' : ''; }
 		function lines(n){ var h=''; for(var i=0;i<n;i++){ h+='<div style="height:8px;background:#eceef1;border-radius:3px;margin:6px 0;width:'+(i%3===2?'70%':'100%')+'"></div>'; } return h; }
 		function img(h){ return '<div style="height:'+h+'px;background:linear-gradient(135deg,#dfe3ea,#cfd5dd)"></div>'; }
-		function excerpt(){ return '<div style="color:#52565e;font-size:11px;margin-top:3px">A fast, no-nonsense guide to fees, limits and rewards.</div>'; }
-		function cardClassic(s,ih){ return '<div style="border:1px solid #eceef1;border-radius:10px;overflow:hidden;margin-bottom:12px">'+img(ih||95)+'<div style="padding:10px 11px">'+chip(s)+'<div style="font-weight:800;font-size:14px">How credit cards actually work</div>'+excerpt()+'</div></div>'; }
-		function cardOverlay(s){ return '<div style="position:relative;border-radius:10px;overflow:hidden;margin-bottom:12px;min-height:120px;background:linear-gradient(180deg,rgba(0,0,0,.12),rgba(0,0,0,.72)),linear-gradient(135deg,#5a6270,#2b3340)"><div style="position:absolute;left:0;right:0;bottom:0;padding:11px">'+chip(s)+'<div style="font-weight:800;font-size:14px;color:#fff">How credit cards actually work</div></div></div>'; }
+		function excerpt(){ return '<div style="color:#52565e;font-size:11px;margin-top:3px">'+PW_TXT.sampleExcerpt+'</div>'; }
+		function cardClassic(s,ih){ return '<div style="border:1px solid #eceef1;border-radius:10px;overflow:hidden;margin-bottom:12px">'+img(ih||95)+'<div style="padding:10px 11px">'+chip(s)+'<div style="font-weight:800;font-size:14px">'+PW_TXT.sampleTitle+'</div>'+excerpt()+'</div></div>'; }
+		function cardOverlay(s){ return '<div style="position:relative;border-radius:10px;overflow:hidden;margin-bottom:12px;min-height:120px;background:linear-gradient(180deg,rgba(0,0,0,.12),rgba(0,0,0,.72)),linear-gradient(135deg,#5a6270,#2b3340)"><div style="position:absolute;left:0;right:0;bottom:0;padding:11px">'+chip(s)+'<div style="font-weight:800;font-size:14px;color:#fff">'+PW_TXT.sampleTitle+'</div></div></div>'; }
 		function card(s){ return s.overlay ? cardOverlay(s) : cardClassic(s); }
 		function mockHome(s){
 			var h = header(s) + '<div style="padding:13px">';
-			if (s.hero){ h += '<div style="border-radius:10px;overflow:hidden;margin-bottom:14px">'+img(110)+'<div style="padding:10px 0">'+chip(s)+'<div style="font-weight:900;font-size:16px">Your guide to smarter money</div>'+excerpt()+'</div></div>'; }
-			h += heading(s,'Latest');
-			if (s.homeVar==='feed'){ for(var i=0;i<4;i++){ h+='<div style="padding:11px 0;border-bottom:1px solid #eceef1">'+chip(s)+'<div style="font-weight:800;font-size:13px">How credit cards actually work</div>'+excerpt()+'</div>'; } }
+			if (s.hero){ h += '<div style="border-radius:10px;overflow:hidden;margin-bottom:14px">'+img(110)+'<div style="padding:10px 0">'+chip(s)+'<div style="font-weight:900;font-size:16px">'+PW_TXT.sampleHero+'</div>'+excerpt()+'</div></div>'; }
+			h += heading(s,PW_TXT.latest);
+			if (s.homeVar==='feed'){ for(var i=0;i<4;i++){ h+='<div style="padding:11px 0;border-bottom:1px solid #eceef1">'+chip(s)+'<div style="font-weight:800;font-size:13px">'+PW_TXT.sampleTitle+'</div>'+excerpt()+'</div>'; } }
 			else if (s.homeVar==='magazine'){ h += card(s) + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'+cardClassic(s,55)+cardClassic(s,55)+'</div>'; }
 			else { h += card(s)+card(s)+card(s); }
 			return h + '</div>' + footer(s);
@@ -394,18 +444,18 @@ function pubweb_render_admin_page(): void {
 		function mockPost(s){
 			var landing = s.singleVar==='landing';
 			var h = header(s) + '<div style="padding:14px">';
-			h += chip(s) + '<div style="font-weight:900;font-size:19px;line-height:1.2">How credit cards actually work</div>';
+			h += chip(s) + '<div style="font-weight:900;font-size:19px;line-height:1.2">'+PW_TXT.sampleTitle+'</div>';
 			h += '<div style="font-size:10px;color:#80858d;margin:6px 0 12px">By Megan Caldwell · Jun 2026'+(landing?'':' · 4 min read')+'</div>';
 			if (!landing){ h += '<div style="border-radius:10px;overflow:hidden;margin-bottom:12px">'+img(130)+'</div>'; }
 			h += lines(7);
-			if (s.singleVar==='sidebar'){ h += '<div style="margin-top:14px;padding:11px;background:#f6f7f9;border-radius:10px"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#80858d;font-weight:800;margin-bottom:8px">Most read</div>'+lines(4)+'</div>'; }
-			if (!landing){ h += '<div style="margin-top:16px">'+heading(s,'Related')+'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'+cardClassic(s,55)+cardClassic(s,55)+'</div></div>'; }
+			if (s.singleVar==='sidebar'){ h += '<div style="margin-top:14px;padding:11px;background:#f6f7f9;border-radius:10px"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#80858d;font-weight:800;margin-bottom:8px">'+PW_TXT.mostRead+'</div>'+lines(4)+'</div>'; }
+			if (!landing){ h += '<div style="margin-top:16px">'+heading(s,PW_TXT.related)+'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'+cardClassic(s,55)+cardClassic(s,55)+'</div></div>'; }
 			return h + '</div>' + footer(s);
 		}
 		function mockCategory(s){
-			var h = header(s) + '<div style="padding:14px"><div style="font-weight:900;font-size:18px;margin-bottom:4px">Finance</div><div style="font-size:11px;color:#80858d;margin-bottom:14px">Latest in this category</div>';
-			if (s.archiveVar==='list'){ for(var i=0;i<4;i++){ h+='<div style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #eceef1"><div style="flex:0 0 90px">'+img(50)+'</div><div>'+chip(s)+'<div style="font-weight:800;font-size:12px">How credit cards work</div></div></div>'; } }
-			else if (s.archiveVar==='headlines'){ for(var j=0;j<5;j++){ h+='<div style="padding:9px 0;border-bottom:1px solid #eceef1;font-weight:700;font-size:12px">How credit cards actually work</div>'; } }
+			var h = header(s) + '<div style="padding:14px"><div style="font-weight:900;font-size:18px;margin-bottom:4px">'+PW_TXT.sampleCat+'</div><div style="font-size:11px;color:#80858d;margin-bottom:14px">'+PW_TXT.latestInCat+'</div>';
+			if (s.archiveVar==='list'){ for(var i=0;i<4;i++){ h+='<div style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #eceef1"><div style="flex:0 0 90px">'+img(50)+'</div><div>'+chip(s)+'<div style="font-weight:800;font-size:12px">'+PW_TXT.sampleTitle+'</div></div></div>'; } }
+			else if (s.archiveVar==='headlines'){ for(var j=0;j<5;j++){ h+='<div style="padding:9px 0;border-bottom:1px solid #eceef1;font-weight:700;font-size:12px">'+PW_TXT.sampleTitle+'</div>'; } }
 			else { h += card(s)+card(s)+card(s); }
 			return h + '</div>' + footer(s);
 		}
@@ -416,6 +466,12 @@ function pubweb_render_admin_page(): void {
 			$('.pw-pv-tab').css('box-shadow','none').filter('[data-pv="'+pvType+'"]').css('box-shadow','inset 0 -3px 0 '+s.accent);
 		}
 		$('.pw-pv-tab').on('click', function(){ pvType = $(this).data('pv'); renderPhone(); });
+		$('.pw-menu-select').on('change', function(){
+			var id = $(this).val(); pvMenu = null;
+			for (var i = 0; i < PW_MENUS.length; i++) { if (String(PW_MENUS[i].id) === id) { pvMenu = PW_MENUS[i]; } }
+			$('.pw-menu-edit').attr('href', id ? MENU_EDIT + id : MENU_BASE);
+			renderPhone();
+		});
 		$('.pw-color').wpColorPicker({ change: function(){ setTimeout(renderPhone, 30); } });
 		$('#pubweb-form').on('change input', 'select, input[type=checkbox], input[type=number]', renderPhone);
 		renderPhone();

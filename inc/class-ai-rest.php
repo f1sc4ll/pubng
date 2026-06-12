@@ -102,6 +102,12 @@ final class PubWeb_AI_REST {
 			'permission_callback' => $guard,
 		) );
 
+		register_rest_route( self::NS, '/logo', array(
+			'methods'             => 'POST',
+			'callback'            => array( self::class, 'set_logo' ),
+			'permission_callback' => $guard,
+		) );
+
 		register_rest_route( self::NS, '/audit', array(
 			'methods'             => 'GET',
 			'callback'            => array( self::class, 'get_audit' ),
@@ -293,6 +299,32 @@ final class PubWeb_AI_REST {
 			),
 			'register' => $register,
 			'prompt'   => $prompt,
+		) );
+	}
+
+	/**
+	 * Sideload an image from an HTTPS URL into the media library and set it
+	 * as the theme logo (branding.logo_id). Body: { url }.
+	 */
+	public static function set_logo( WP_REST_Request $req ): WP_REST_Response|WP_Error {
+		$body = (array) $req->get_json_params();
+		$url  = isset( $body['url'] ) ? esc_url_raw( (string) $body['url'] ) : '';
+		if ( '' === $url || ! str_starts_with( $url, 'https://' ) ) {
+			return self::bad_request( __( 'Provide an https image "url".', 'pubweb' ) );
+		}
+		require_once ABSPATH . 'wp-admin/includes/media.php';
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+		require_once ABSPATH . 'wp-admin/includes/image.php';
+
+		$attachment_id = media_sideload_image( $url, 0, null, 'id' );
+		if ( is_wp_error( $attachment_id ) ) {
+			return new WP_Error( 'pubweb_logo_failed', $attachment_id->get_error_message(), array( 'status' => 502 ) );
+		}
+		PubWeb_Settings::update( array( 'branding' => array( 'logo_id' => (int) $attachment_id ) ) );
+		PubWeb_AI_Auth::audit( $req, 200, 'logo:set:' . $attachment_id );
+		return self::ok( $req, array(
+			'logo_id' => (int) $attachment_id,
+			'url'     => wp_get_attachment_url( $attachment_id ),
 		) );
 	}
 

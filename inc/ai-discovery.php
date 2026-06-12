@@ -52,7 +52,7 @@ function pubweb_build_llms_txt(): string {
 		$lines[] = '> ' . $desc;
 		$lines[] = '';
 	}
-	$lines[] = 'This file helps AI agents navigate ' . home_url( '/' ) . ' efficiently.';
+	$lines[] = sprintf( __( 'This file helps AI agents navigate %s efficiently.', 'pubweb' ), home_url( '/' ) );
 	$lines[] = '';
 
 	// Top categories.
@@ -63,7 +63,7 @@ function pubweb_build_llms_txt(): string {
 		'hide_empty' => true,
 	) );
 	if ( ! empty( $cats ) ) {
-		$lines[] = '## Sections';
+		$lines[] = '## ' . __( 'Sections', 'pubweb' );
 		$lines[] = '';
 		foreach ( $cats as $cat ) {
 			$lines[] = sprintf( '- [%s](%s)', $cat->name, get_category_link( $cat->term_id ) );
@@ -78,7 +78,7 @@ function pubweb_build_llms_txt(): string {
 		'suppress_filters' => false,
 	) );
 	if ( ! empty( $recent ) ) {
-		$lines[] = '## Recent articles';
+		$lines[] = '## ' . __( 'Recent articles', 'pubweb' );
 		$lines[] = '';
 		foreach ( $recent as $post ) {
 			$lines[] = sprintf( '- [%s](%s)', get_the_title( $post ), get_permalink( $post ) );
@@ -86,9 +86,9 @@ function pubweb_build_llms_txt(): string {
 		$lines[] = '';
 	}
 
-	$lines[] = '## Optional';
+	$lines[] = '## ' . __( 'Optional', 'pubweb' );
 	$lines[] = '';
-	$lines[] = sprintf( '- [Sitemap](%s)', home_url( '/sitemap.xml' ) );
+	$lines[] = sprintf( '- [%s](%s)', __( 'Sitemap', 'pubweb' ), home_url( '/sitemap.xml' ) );
 
 	return implode( "\n", $lines ) . "\n";
 }
