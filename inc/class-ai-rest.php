@@ -40,15 +40,11 @@ final class PubWeb_AI_REST {
 		if ( true === $result ) {
 			return $result;
 		}
-		$route = '';
-		if ( isset( $GLOBALS['wp']->query_vars['rest_route'] ) ) {
-			$route = (string) $GLOBALS['wp']->query_vars['rest_route'];
-		}
-		if ( '' === $route ) {
-			$route = (string) ( $_SERVER['REQUEST_URI'] ?? '' );
-		}
-		if ( false === strpos( $route, self::NS ) ) {
-			return $result; // Not our namespace — leave any lock in place.
+		$route = isset( $GLOBALS['wp']->query_vars['rest_route'] ) ? (string) $GLOBALS['wp']->query_vars['rest_route'] : '';
+		// Strict prefix on the RESOLVED route only (no REQUEST_URI fallback),
+		// so we never clear a global lock for a non-pubweb route.
+		if ( 0 !== strpos( $route, '/' . self::NS . '/' ) ) {
+			return $result;
 		}
 		return PubWeb_AI_Auth::token_present_and_valid() ? true : $result;
 	}
@@ -130,7 +126,21 @@ final class PubWeb_AI_REST {
 	}
 
 	public static function get_settings( WP_REST_Request $req ): WP_REST_Response {
-		return self::ok( $req, pubweb_settings() );
+		return self::ok( $req, self::redact( pubweb_settings() ) );
+	}
+
+	/**
+	 * Never return secrets over the API. The translation API key is
+	 * write-only: settable via PATCH, but masked on read.
+	 *
+	 * @param array<string,mixed> $settings Settings tree.
+	 * @return array<string,mixed>
+	 */
+	private static function redact( array $settings ): array {
+		if ( ! empty( $settings['translation']['api_key'] ) ) {
+			$settings['translation']['api_key'] = '***set***';
+		}
+		return $settings;
 	}
 
 	public static function get_schema( WP_REST_Request $req ): WP_REST_Response {
@@ -142,9 +152,14 @@ final class PubWeb_AI_REST {
 		if ( ! is_array( $body ) || array() === $body ) {
 			return self::bad_request( __( 'Body must be a non-empty JSON object.', 'pubweb' ) );
 		}
+		// Ignore the masked placeholder so a GET→PATCH round-trip can't
+		// clobber the real key with "***set***".
+		if ( isset( $body['translation']['api_key'] ) && '***set***' === $body['translation']['api_key'] ) {
+			unset( $body['translation']['api_key'] );
+		}
 		$updated = PubWeb_Settings::update( $body );
 		PubWeb_AI_Auth::audit( $req, 200, 'patch:' . implode( ',', array_keys( $body ) ) );
-		return self::ok( $req, $updated );
+		return self::ok( $req, self::redact( $updated ) );
 	}
 
 	public static function get_custom_code( WP_REST_Request $req ): WP_REST_Response {
@@ -186,6 +201,9 @@ final class PubWeb_AI_REST {
 		$target = isset( $body['target'] ) ? sanitize_text_field( (string) $body['target'] ) : '';
 		if ( '' === $text || '' === $target ) {
 			return self::bad_request( __( 'Provide "text" and "target" (BCP-47).', 'pubweb' ) );
+		}
+		if ( strlen( $text ) > 20000 ) {
+			return self::bad_request( __( 'Text exceeds the 20,000-character limit.', 'pubweb' ) );
 		}
 		$source = isset( $body['source'] ) ? sanitize_text_field( (string) $body['source'] ) : '';
 		$result = PubWeb_AI_Translate::translate( $text, $target, $source );

@@ -112,16 +112,6 @@ function pubweb_handle_admin_save(): void {
 			'system_fonts'      => $b( 'performance', 'system_fonts' ),
 			'disable_embeds'    => $b( 'performance', 'disable_embeds' ),
 		),
-		'schema'      => array(
-			'enabled'        => $b( 'schema', 'enabled' ),
-			'org_name'       => $s( 'schema', 'org_name' ),
-			'publisher_type' => 'NewsMediaOrganization' === ( $in['schema']['publisher_type'] ?? '' ) ? 'NewsMediaOrganization' : 'Organization',
-			'article_type'   => in_array( $in['schema']['article_type'] ?? '', array( 'Article', 'BlogPosting', 'NewsArticle' ), true ) ? $in['schema']['article_type'] : 'Article',
-		),
-		'seo'         => array(
-			'enabled'      => $b( 'seo', 'enabled' ),
-			'twitter_site' => $s( 'seo', 'twitter_site' ),
-		),
 		'translation' => array(
 			'provider'       => in_array( $in['translation']['provider'] ?? 'none', array( 'none', 'openai', 'grok', 'claude', 'openrouter' ), true ) ? $in['translation']['provider'] : 'none',
 			'api_key'        => isset( $in['translation']['api_key'] ) ? trim( (string) $in['translation']['api_key'] ) : '',
@@ -130,9 +120,11 @@ function pubweb_handle_admin_save(): void {
 			'target_langs'   => $langs,
 			'auto_translate' => $b( 'translation', 'auto_translate' ),
 		),
+		// Raw <script> in head/footer requires unfiltered_html (matters on
+		// multisite, where manage_options is not super-admin).
 		'custom_code' => array(
-			'head_html'   => isset( $in['custom_code']['head_html'] ) ? (string) $in['custom_code']['head_html'] : '',
-			'footer_html' => isset( $in['custom_code']['footer_html'] ) ? (string) $in['custom_code']['footer_html'] : '',
+			'head_html'   => isset( $in['custom_code']['head_html'] ) ? ( current_user_can( 'unfiltered_html' ) ? (string) $in['custom_code']['head_html'] : wp_kses_post( (string) $in['custom_code']['head_html'] ) ) : '',
+			'footer_html' => isset( $in['custom_code']['footer_html'] ) ? ( current_user_can( 'unfiltered_html' ) ? (string) $in['custom_code']['footer_html'] : wp_kses_post( (string) $in['custom_code']['footer_html'] ) ) : '',
 			'custom_css'  => isset( $in['custom_code']['custom_css'] ) ? wp_strip_all_tags( (string) $in['custom_code']['custom_css'] ) : '',
 		),
 		'updater'     => array(
@@ -165,7 +157,6 @@ function pubweb_render_admin_page(): void {
 		'design'  => __( 'Design', 'pubweb' ),
 		'layout'  => __( 'Layout', 'pubweb' ),
 		'perf'    => __( 'Performance', 'pubweb' ),
-		'seo'     => __( 'Schema & SEO', 'pubweb' ),
 		'i18n'    => __( 'Translation', 'pubweb' ),
 		'code'    => __( 'Custom code', 'pubweb' ),
 		'api'     => __( 'API & Updates', 'pubweb' ),
@@ -253,17 +244,6 @@ function pubweb_render_admin_page(): void {
 							<tr><th><?php echo esc_html( $label ); ?></th><td><label><input type="checkbox" name="pw[<?php echo esc_attr( $grp ); ?>][<?php echo esc_attr( $key ); ?>]" value="1"<?php echo $ck( $g( $path ) ); ?>></label></td></tr>
 						<?php endforeach; ?>
 						<tr><td colspan="2"><p class="description"><?php esc_html_e( 'Ad delivery is handled automatically by your ad stack (Ad Inserter / network loader) — the theme ships no ad code.', 'pubweb' ); ?></p></td></tr>
-					</table>
-				</div>
-
-				<div class="pw-tab" data-tab="seo" hidden>
-					<table class="form-table" role="presentation">
-						<tr><th><?php esc_html_e( 'Auto JSON-LD schema', 'pubweb' ); ?></th><td><label><input type="checkbox" name="pw[schema][enabled]" value="1"<?php echo $ck( $g( 'schema.enabled' ) ); ?>></label></td></tr>
-						<tr><th><?php esc_html_e( 'Organization name', 'pubweb' ); ?></th><td><input type="text" name="pw[schema][org_name]" value="<?php echo esc_attr( $g( 'schema.org_name' ) ); ?>" class="regular-text"></td></tr>
-						<tr><th><?php esc_html_e( 'Publisher type', 'pubweb' ); ?></th><td><select name="pw[schema][publisher_type]"><option value="Organization"<?php selected( $g( 'schema.publisher_type' ), 'Organization' ); ?>>Organization</option><option value="NewsMediaOrganization"<?php selected( $g( 'schema.publisher_type' ), 'NewsMediaOrganization' ); ?>>NewsMediaOrganization</option></select></td></tr>
-						<tr><th><?php esc_html_e( 'Article type', 'pubweb' ); ?></th><td><select name="pw[schema][article_type]"><?php foreach ( array( 'Article', 'BlogPosting', 'NewsArticle' ) as $t ) : ?><option value="<?php echo esc_attr( $t ); ?>"<?php selected( $g( 'schema.article_type' ), $t ); ?>><?php echo esc_html( $t ); ?></option><?php endforeach; ?></select></td></tr>
-						<tr><th><?php esc_html_e( 'Theme meta/OG tags', 'pubweb' ); ?></th><td><label><input type="checkbox" name="pw[seo][enabled]" value="1"<?php echo $ck( $g( 'seo.enabled' ) ); ?>></label> <span class="description"><?php esc_html_e( 'Auto-disabled when an SEO plugin is active.', 'pubweb' ); ?></span></td></tr>
-						<tr><th><?php esc_html_e( 'Twitter @site', 'pubweb' ); ?></th><td><input type="text" name="pw[seo][twitter_site]" value="<?php echo esc_attr( $g( 'seo.twitter_site' ) ); ?>"></td></tr>
 					</table>
 				</div>
 
