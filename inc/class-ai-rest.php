@@ -312,6 +312,24 @@ final class PubWeb_AI_REST {
 		if ( '' === $url || ! str_starts_with( $url, 'https://' ) ) {
 			return self::bad_request( __( 'Provide an https image "url".', 'pubweb' ) );
 		}
+
+		// SSRF guard: reject hosts that resolve to non-public addresses
+		// (loopback, RFC1918, link-local incl. cloud metadata 169.254.169.254).
+		// download_url() (used below) re-validates redirects via reject_unsafe_urls.
+		if ( ! wp_http_validate_url( $url ) ) {
+			return self::bad_request( __( 'URL host is not allowed.', 'pubweb' ) );
+		}
+		$host = (string) wp_parse_url( $url, PHP_URL_HOST );
+		$ips  = $host ? (array) gethostbynamel( $host ) : array();
+		if ( filter_var( $host, FILTER_VALIDATE_IP ) ) {
+			$ips[] = $host;
+		}
+		foreach ( array_filter( $ips ) as $ip ) {
+			if ( ! filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) ) {
+				return self::bad_request( __( 'URL resolves to a private address.', 'pubweb' ) );
+			}
+		}
+
 		require_once ABSPATH . 'wp-admin/includes/media.php';
 		require_once ABSPATH . 'wp-admin/includes/file.php';
 		require_once ABSPATH . 'wp-admin/includes/image.php';
