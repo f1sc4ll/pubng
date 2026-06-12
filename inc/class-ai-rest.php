@@ -96,6 +96,12 @@ final class PubWeb_AI_REST {
 			'permission_callback' => $guard,
 		) );
 
+		register_rest_route( self::NS, '/mcp', array(
+			'methods'             => 'GET',
+			'callback'            => array( self::class, 'mcp_guide' ),
+			'permission_callback' => $guard,
+		) );
+
 		register_rest_route( self::NS, '/audit', array(
 			'methods'             => 'GET',
 			'callback'            => array( self::class, 'get_audit' ),
@@ -214,6 +220,79 @@ final class PubWeb_AI_REST {
 		return self::ok( $req, array(
 			'translation' => $result,
 			'target'      => $target,
+		) );
+	}
+
+	/**
+	 * Self-onboarding: returns a ready-to-paste prompt + config teaching an
+	 * AI (Claude / ChatGPT) how to install and connect to the PubWeb Theme
+	 * MCP, plus the tool list and the registration template for this site.
+	 */
+	public static function mcp_guide( WP_REST_Request $req ): WP_REST_Response {
+		$base = rest_url( self::NS );
+		$site = wp_parse_url( home_url(), PHP_URL_HOST );
+
+		$tools = array(
+			'health'              => 'theme/WP/PHP versions and status',
+			'get_settings'        => 'read the full settings tree (api_key is masked)',
+			'get_settings_schema' => 'the {type,default} of every editable key — CALL THIS FIRST',
+			'patch_settings'      => 'partial update; e.g. {"layout":{"home_variant":"feed"}}',
+			'get_custom_code'     => 'read custom head/footer HTML + CSS',
+			'put_custom_code'     => 'set head_html / footer_html / custom_css',
+			'translate'           => 'AI translation: {text, target, source?}',
+			'get_audit'           => 'recent API actions',
+			'rotate_token'        => 'rotate the token (returns plaintext once)',
+		);
+
+		$register = array(
+			'mcpServers' => array(
+				'pubweb-theme' => array(
+					'command' => 'uv',
+					'args'    => array( 'run', '--with', 'mcp', '--with', 'httpx', '/ABSOLUTE/PATH/TO/pubweb-theme/server.py' ),
+					'env'     => array(
+						'PUBWEB_MCP_BASE_URL' => $base,
+						'PUBWEB_MCP_TOKEN'    => '<YOUR_TOKEN>',
+					),
+				),
+			),
+		);
+
+		$prompt = implode( "\n", array(
+			'You are connecting to the "PubWeb Theme" MCP server, which edits a live WordPress theme over its pubweb/v1 REST API.',
+			'',
+			'SETUP',
+			'1. Ensure `uv` (Astral) is installed, or use Python 3.11+ with `pip install mcp httpx`.',
+			'2. Obtain `server.py` (PubWeb Theme MCP). It reads two env vars:',
+			'   - PUBWEB_MCP_BASE_URL = ' . $base,
+			'   - PUBWEB_MCP_TOKEN    = the API token (ask the operator; never hardcode it in shared files).',
+			'3. Register the server with your client:',
+			'   - Claude Code: `claude mcp add pubweb-theme --env PUBWEB_MCP_BASE_URL=' . $base . ' --env PUBWEB_MCP_TOKEN=<token> -- uv run --with mcp --with httpx /abs/path/server.py`',
+			'   - Or add the JSON under "register" (in this response) to your MCP config and restart the client.',
+			'',
+			'USAGE',
+			'4. Call `get_settings_schema` FIRST to learn the editable keys and their types.',
+			'5. Read state with `get_settings` / `get_custom_code`; change it with `patch_settings` (send only the keys you change, nested).',
+			'   Examples: {"branding":{"accent_color":"#e91e63"}} · {"layout":{"single_variant":"sidebar","archive_variant":"list"}}.',
+			'6. For multilingual content use `translate` (configure a provider + API key in the Translation settings first, else it returns 503).',
+			'7. A wrong/missing token returns 401; an unconfigured site returns 503. The token equals admin-trust — treat it as a secret.',
+			'',
+			'Verify the connection by calling `health` and confirming it returns the theme name and version.',
+		) );
+
+		return self::ok( $req, array(
+			'server'   => array(
+				'name'        => 'pubweb-theme',
+				'description' => 'MCP server exposing the pubweb/v1 endpoints as tools to edit the live theme.',
+				'site'        => $site,
+			),
+			'base_url' => $base,
+			'tools'    => $tools,
+			'install'  => array(
+				'uv'  => 'uv run --with mcp --with httpx /abs/path/pubweb-theme/server.py',
+				'pip' => 'pip install mcp httpx; then run server.py with the env vars set',
+			),
+			'register' => $register,
+			'prompt'   => $prompt,
 		) );
 	}
 

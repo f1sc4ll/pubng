@@ -321,74 +321,106 @@ function pubweb_render_admin_page(): void {
 			</div>
 		</div>
 
-		<!-- Live preview -->
+		<!-- Live preview: scrollable mobile mockups per page type -->
 		<div class="pw-preview-wrap" style="position:sticky;top:40px">
-			<p style="font-weight:600;margin:.4em 0"><?php esc_html_e( 'Live preview', 'pubweb' ); ?></p>
-			<div class="pw-pv" style="border:1px solid #dcdcde;border-radius:10px;overflow:hidden;font-family:system-ui,sans-serif">
-				<div class="pw-pv-header" style="display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid #eceef1">
-					<strong class="pw-pv-logo" style="font-size:15px;font-weight:900"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></strong>
-					<span style="margin-left:auto;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em" class="pw-pv-nav">Home · Finance</span>
-				</div>
-				<div style="padding:14px">
-					<h4 class="pw-pv-heading" style="font-size:12px;text-transform:uppercase;letter-spacing:.12em;font-weight:800;margin:0 0 12px"><span style="display:inline-block;padding-bottom:6px;border-bottom:3px solid">Latest</span></h4>
-					<div class="pw-pv-card" style="border:1px solid #eceef1;border-radius:10px;overflow:hidden;background-size:cover;background-position:center">
-						<div class="pw-pv-card-img" style="height:90px;background:#dfe3ea"></div>
-						<div class="pw-pv-card-body" style="padding:11px 12px">
-							<span class="pw-pv-chip" style="display:inline-block;font-size:10px;font-weight:800;text-transform:uppercase;color:#fff;padding:2px 8px;border-radius:4px;margin-bottom:6px">Finance</span>
-							<div class="pw-pv-card-title" style="font-weight:800;font-size:14px">How credit cards actually work</div>
-						</div>
-					</div>
-					<button class="pw-pv-btn" type="button" style="margin-top:12px;border:0;color:#fff;border-radius:8px;padding:8px 16px;font-weight:700;cursor:default"><?php esc_html_e( 'Accent button', 'pubweb' ); ?></button>
-				</div>
-				<div class="pw-pv-footer" style="padding:12px 14px;font-size:11px;color:#c5c9d1">© <?php echo esc_html( get_bloginfo( 'name' ) ); ?></div>
+			<div class="pw-pv-tabs" style="display:flex;gap:4px;margin-bottom:8px;justify-content:center">
+				<button type="button" class="button button-small pw-pv-tab" data-pv="home"><?php esc_html_e( 'Home', 'pubweb' ); ?></button>
+				<button type="button" class="button button-small pw-pv-tab" data-pv="post"><?php esc_html_e( 'Post', 'pubweb' ); ?></button>
+				<button type="button" class="button button-small pw-pv-tab" data-pv="category"><?php esc_html_e( 'Category', 'pubweb' ); ?></button>
 			</div>
+			<div class="pw-phone" style="width:300px;margin:0 auto;background:#111418;border-radius:28px;padding:12px 9px;box-shadow:0 8px 28px rgba(0,0,0,.22)">
+				<div style="width:90px;height:5px;background:#2b3038;border-radius:3px;margin:1px auto 9px"></div>
+				<div class="pw-phone-screen" style="height:540px;overflow-y:auto;border-radius:18px;background:#fff;font-family:system-ui,-apple-system,sans-serif;font-size:13px;line-height:1.45;color:#16181d"></div>
+			</div>
+			<p class="description" style="text-align:center;margin-top:8px"><?php esc_html_e( 'Mobile preview — switch page type, scroll inside.', 'pubweb' ); ?></p>
 		</div>
 		</div>
 	</div>
 
 	<script>
 	jQuery(function ($) {
-		// Tabs.
+		// ---- Settings tabs (left form) ----
 		var $links = $('.pw-tab-link'), $tabs = $('.pw-tab');
-		function show(tab) {
+		function showTab(tab) {
 			$links.removeClass('nav-tab-active').filter('[data-tab="' + tab + '"]').addClass('nav-tab-active');
 			$tabs.attr('hidden', true).filter('[data-tab="' + tab + '"]').removeAttr('hidden');
 		}
-		$links.on('click', function (e) { e.preventDefault(); show($(this).data('tab')); });
-		show('design');
+		$links.on('click', function (e) { e.preventDefault(); showTab($(this).data('tab')); });
+		showTab('design');
 
-		// Live preview.
-		var pv = {
-			accent: $('input[data-prop="accent"]').val(),
-			headerBg: $('input[data-prop="headerBg"]').val(),
-			footerBg: $('input[data-prop="footerBg"]').val(),
-			bodyBg: $('input[data-prop="bodyBg"]').val()
-		};
-		function render() {
-			var a = pv.accent || '#1769ff';
-			$('.pw-pv-header').css('background', pv.headerBg || '#fff');
-			$('.pw-pv-footer').css('background', pv.footerBg || '#0e1116');
-			$('.pw-pv').css('background', pv.bodyBg || '#fff');
-			$('.pw-pv-nav, .pw-pv-heading span').css({ 'color': a, 'border-color': a });
-			$('.pw-pv-chip, .pw-pv-btn').css('background', a);
-			var overlay = $('select[data-prop="cardStyle"]').val() === 'overlay';
-			var feed = $('select[data-prop="homeVar"]').val() === 'feed';
-			$('.pw-pv-chip').toggle($('input[data-prop="chip"]').is(':checked'));
-			$('.pw-pv-heading').toggle($('input[data-prop="sectionHeading"]').is(':checked'));
-			$('.pw-pv-card').css(overlay && !feed ? { 'min-height': '110px', 'background-image': 'linear-gradient(180deg,rgba(0,0,0,.1),rgba(0,0,0,.7)),url(https://picsum.photos/300/160)' } : { 'min-height': '', 'background-image': '' });
-			$('.pw-pv-card').css('border', feed ? '0' : '1px solid #eceef1');
-			$('.pw-pv-card-img').toggle(!overlay && !feed);
-			$('.pw-pv-card-title').css('color', overlay && !feed ? '#fff' : '#16181d');
+		// ---- Live mobile preview ----
+		var SITE = <?php echo wp_json_encode( get_bloginfo( 'name' ) ); ?>;
+		var pvType = 'home';
+		function v(sel){ return $(sel).val(); }
+		function st(){
+			return {
+				accent: v('input[data-prop="accent"]') || '#1769ff',
+				headerBg: v('input[data-prop="headerBg"]') || '#ffffff',
+				footerBg: v('input[data-prop="footerBg"]') || '#0e1116',
+				bodyBg: v('input[data-prop="bodyBg"]') || '#ffffff',
+				overlay: v('select[data-prop="cardStyle"]') === 'overlay',
+				chip: $('input[data-prop="chip"]').is(':checked'),
+				heading: $('input[data-prop="sectionHeading"]').is(':checked'),
+				hero: $('input[name="pw[layout][featured_hero]"]').is(':checked'),
+				homeVar: v('select[data-prop="homeVar"]') || 'grid',
+				singleVar: v('select[data-prop="singleVar"]') || 'centered',
+				archiveVar: v('select[data-prop="archiveVar"]') || 'grid',
+				logo: $('.pw-logo-preview').is(':visible') ? $('.pw-logo-preview').attr('src') : ''
+			};
 		}
-		$('.pw-color').wpColorPicker({ change: function (e, ui) {
-			var prop = $(e.target).data('prop'); if (prop) { pv[prop] = ui.color.toString(); render(); }
-		} });
-		$('.pw-live').on('change input', function () {
-			var p = $(this).data('prop'); if (p && pv.hasOwnProperty(p)) { pv[p] = $(this).val(); } render();
-		});
-		render();
+		function esc(x){ return String(x).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+		function header(s){
+			var b = s.logo ? '<img src="'+esc(s.logo)+'" style="max-height:22px;max-width:120px">' : '<strong style="font-size:14px;font-weight:900">'+esc(SITE)+'</strong>';
+			return '<div style="display:flex;align-items:center;padding:10px 12px;border-bottom:1px solid #eceef1;background:'+s.headerBg+'">'+b+'<span style="margin-left:auto;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:'+s.accent+'">Menu ≡</span></div>';
+		}
+		function footer(s){ return '<div style="padding:14px 12px;font-size:10px;color:#c5c9d1;background:'+s.footerBg+'">© '+esc(SITE)+'</div>'; }
+		function chip(s){ return s.chip ? '<span style="display:inline-block;font-size:9px;font-weight:800;text-transform:uppercase;color:#fff;background:'+s.accent+';padding:2px 7px;border-radius:4px;margin-bottom:5px">Finance</span><br>' : ''; }
+		function heading(s,t){ return s.heading ? '<div style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;font-weight:800;margin:0 0 10px"><span style="display:inline-block;padding-bottom:5px;border-bottom:3px solid '+s.accent+'">'+t+'</span></div>' : ''; }
+		function lines(n){ var h=''; for(var i=0;i<n;i++){ h+='<div style="height:8px;background:#eceef1;border-radius:3px;margin:6px 0;width:'+(i%3===2?'70%':'100%')+'"></div>'; } return h; }
+		function img(h){ return '<div style="height:'+h+'px;background:linear-gradient(135deg,#dfe3ea,#cfd5dd)"></div>'; }
+		function excerpt(){ return '<div style="color:#52565e;font-size:11px;margin-top:3px">A fast, no-nonsense guide to fees, limits and rewards.</div>'; }
+		function cardClassic(s,ih){ return '<div style="border:1px solid #eceef1;border-radius:10px;overflow:hidden;margin-bottom:12px">'+img(ih||95)+'<div style="padding:10px 11px">'+chip(s)+'<div style="font-weight:800;font-size:14px">How credit cards actually work</div>'+excerpt()+'</div></div>'; }
+		function cardOverlay(s){ return '<div style="position:relative;border-radius:10px;overflow:hidden;margin-bottom:12px;min-height:120px;background:linear-gradient(180deg,rgba(0,0,0,.12),rgba(0,0,0,.72)),linear-gradient(135deg,#5a6270,#2b3340)"><div style="position:absolute;left:0;right:0;bottom:0;padding:11px">'+chip(s)+'<div style="font-weight:800;font-size:14px;color:#fff">How credit cards actually work</div></div></div>'; }
+		function card(s){ return s.overlay ? cardOverlay(s) : cardClassic(s); }
+		function mockHome(s){
+			var h = header(s) + '<div style="padding:13px">';
+			if (s.hero){ h += '<div style="border-radius:10px;overflow:hidden;margin-bottom:14px">'+img(110)+'<div style="padding:10px 0">'+chip(s)+'<div style="font-weight:900;font-size:16px">Your guide to smarter money</div>'+excerpt()+'</div></div>'; }
+			h += heading(s,'Latest');
+			if (s.homeVar==='feed'){ for(var i=0;i<4;i++){ h+='<div style="padding:11px 0;border-bottom:1px solid #eceef1">'+chip(s)+'<div style="font-weight:800;font-size:13px">How credit cards actually work</div>'+excerpt()+'</div>'; } }
+			else if (s.homeVar==='magazine'){ h += card(s) + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'+cardClassic(s,55)+cardClassic(s,55)+'</div>'; }
+			else { h += card(s)+card(s)+card(s); }
+			return h + '</div>' + footer(s);
+		}
+		function mockPost(s){
+			var landing = s.singleVar==='landing';
+			var h = header(s) + '<div style="padding:14px">';
+			h += chip(s) + '<div style="font-weight:900;font-size:19px;line-height:1.2">How credit cards actually work</div>';
+			h += '<div style="font-size:10px;color:#80858d;margin:6px 0 12px">By Megan Caldwell · Jun 2026'+(landing?'':' · 4 min read')+'</div>';
+			if (!landing){ h += '<div style="border-radius:10px;overflow:hidden;margin-bottom:12px">'+img(130)+'</div>'; }
+			h += lines(7);
+			if (s.singleVar==='sidebar'){ h += '<div style="margin-top:14px;padding:11px;background:#f6f7f9;border-radius:10px"><div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#80858d;font-weight:800;margin-bottom:8px">Most read</div>'+lines(4)+'</div>'; }
+			if (!landing){ h += '<div style="margin-top:16px">'+heading(s,'Related')+'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'+cardClassic(s,55)+cardClassic(s,55)+'</div></div>'; }
+			return h + '</div>' + footer(s);
+		}
+		function mockCategory(s){
+			var h = header(s) + '<div style="padding:14px"><div style="font-weight:900;font-size:18px;margin-bottom:4px">Finance</div><div style="font-size:11px;color:#80858d;margin-bottom:14px">Latest in this category</div>';
+			if (s.archiveVar==='list'){ for(var i=0;i<4;i++){ h+='<div style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid #eceef1"><div style="flex:0 0 90px">'+img(50)+'</div><div>'+chip(s)+'<div style="font-weight:800;font-size:12px">How credit cards work</div></div></div>'; } }
+			else if (s.archiveVar==='headlines'){ for(var j=0;j<5;j++){ h+='<div style="padding:9px 0;border-bottom:1px solid #eceef1;font-weight:700;font-size:12px">How credit cards actually work</div>'; } }
+			else { h += card(s)+card(s)+card(s); }
+			return h + '</div>' + footer(s);
+		}
+		function renderPhone(){
+			var s = st();
+			var html = pvType==='post' ? mockPost(s) : (pvType==='category' ? mockCategory(s) : mockHome(s));
+			$('.pw-phone-screen').css('background', s.bodyBg).html(html);
+			$('.pw-pv-tab').css('box-shadow','none').filter('[data-pv="'+pvType+'"]').css('box-shadow','inset 0 -3px 0 '+s.accent);
+		}
+		$('.pw-pv-tab').on('click', function(){ pvType = $(this).data('pv'); renderPhone(); });
+		$('.pw-color').wpColorPicker({ change: function(){ setTimeout(renderPhone, 30); } });
+		$('#pubweb-form').on('change input', 'select, input[type=checkbox], input[type=number]', renderPhone);
+		renderPhone();
 
-		// Logo media uploader.
+		// ---- Logo media uploader ----
 		var frame;
 		$('.pw-logo-upload').on('click', function (e) {
 			e.preventDefault();
@@ -398,11 +430,11 @@ function pubweb_render_admin_page(): void {
 				var a = frame.state().get('selection').first().toJSON();
 				$('.pw-logo-id').val(a.id);
 				$('.pw-logo-preview').attr('src', a.sizes && a.sizes.medium ? a.sizes.medium.url : a.url).show();
-				$('.pw-pv-logo').text(''); // logo set
+				renderPhone();
 			});
 			frame.open();
 		});
-		$('.pw-logo-remove').on('click', function (e) { e.preventDefault(); $('.pw-logo-id').val(0); $('.pw-logo-preview').hide(); });
+		$('.pw-logo-remove').on('click', function (e) { e.preventDefault(); $('.pw-logo-id').val(0); $('.pw-logo-preview').hide(); renderPhone(); });
 	});
 	</script>
 	<?php
