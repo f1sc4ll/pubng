@@ -117,6 +117,9 @@ function pubweb_handle_admin_save(): void {
 			'system_fonts'      => $b( 'performance', 'system_fonts' ),
 			'disable_embeds'    => $b( 'performance', 'disable_embeds' ),
 		),
+		'seo'         => array(
+			'noindex' => $b( 'seo', 'noindex' ),
+		),
 		'translation' => array(
 			'provider'       => in_array( $in['translation']['provider'] ?? 'none', array( 'none', 'openai', 'grok', 'claude', 'openrouter' ), true ) ? $in['translation']['provider'] : 'none',
 			'api_key'        => isset( $in['translation']['api_key'] ) ? trim( (string) $in['translation']['api_key'] ) : '',
@@ -287,6 +290,11 @@ function pubweb_render_admin_page(): void {
 							<tr><th><?php echo esc_html( $label ); ?></th><td><label><input type="checkbox" name="pw[<?php echo esc_attr( $grp ); ?>][<?php echo esc_attr( $key ); ?>]" value="1"<?php echo $ck( $g( $path ) ); ?>></label></td></tr>
 						<?php endforeach; ?>
 						<tr><td colspan="2"><p class="description"><?php esc_html_e( 'Ad delivery is handled automatically by your ad stack (Ad Inserter / network loader) — the theme ships no ad code.', 'pubweb' ); ?></p></td></tr>
+						<tr><th colspan="2" style="padding-bottom:0"><strong><?php esc_html_e( 'Search engines', 'pubweb' ); ?></strong></th></tr>
+						<tr><th><?php esc_html_e( 'Indexing', 'pubweb' ); ?></th><td>
+							<label><input type="checkbox" name="pw[seo][noindex]" value="1"<?php echo $ck( $g( 'seo.noindex' ) ); ?>> <?php esc_html_e( 'Block search engines (noindex, nofollow)', 'pubweb' ); ?></label>
+							<p class="description"><?php esc_html_e( 'On by default — the site is not indexable. Uncheck to allow Google & others to index it.', 'pubweb' ); ?></p>
+						</td></tr>
 					</table>
 				</div>
 

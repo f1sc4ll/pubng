@@ -80,6 +80,7 @@ final class PubWeb_Settings {
 			),
 			'seo'         => array(
 				'enabled'           => true,  // Auto-disabled if Yoast/RankMath/SEOPress is active.
+				'noindex'           => true,  // Default: NOT indexable. Operator opts in to indexing.
 				'title_separator'   => '–',
 				'default_og_image'  => 0,
 				'twitter_site'      => '',

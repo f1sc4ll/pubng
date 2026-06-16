@@ -10,6 +10,27 @@
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * Search-engine indexing. Default OFF (noindex): the operator must opt in to
+ * being indexed via the theme settings. Uses the native wp_robots filter so it
+ * composes with core and most SEO plugins. Runs late to win.
+ *
+ * @param array<string,mixed> $robots Robots directives.
+ * @return array<string,mixed>
+ */
+add_filter(
+	'wp_robots',
+	static function ( array $robots ): array {
+		if ( pubweb_settings( 'seo.noindex' ) ) {
+			$robots['noindex']  = true;
+			$robots['nofollow'] = true;
+			unset( $robots['max-image-preview'], $robots['max-snippet'], $robots['max-video-preview'] );
+		}
+		return $robots;
+	},
+	99
+);
+
 add_action(
 	'wp_head',
 	static function (): void {
